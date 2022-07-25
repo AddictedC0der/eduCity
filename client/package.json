@@ -1,0 +1,35 @@
+{
+  "name": "educity",
+  "version": "1.0.0",
+  "description": "None for now",
+  "main": "index.tsx",
+  "scripts": {
+    "start": "react-scripts start",
+    "test": "start:test"
+  },
+  "author": "D3l1te",
+  "license": "ISC",
+  "dependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@mui/material": "^5.9.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/react-dom": "^18.0.6"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
