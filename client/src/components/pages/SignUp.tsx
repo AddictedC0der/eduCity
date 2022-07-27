@@ -3,6 +3,11 @@ import { Box, Container, Typography, TextField, Button, Paper, Grid } from '@mui
 
 
 export default function SignUp() {
+
+    const onSubmit = () => {
+        // TODO: add registration
+    }
+
     return (
         <Paper sx={{width: '35%', height: '70vh'}}>
             <Grid container direction='column' alignItems='center' justifyContent='space-evenly' sx={{height: '100%'}}>
