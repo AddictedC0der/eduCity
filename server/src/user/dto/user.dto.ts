@@ -31,3 +31,14 @@ export class UpdateUserDto {
     @IsEmail()
     readonly email: string;
 }
+
+export class UserDto {
+    @ApiProperty({example: 'qwerty123', description: 'Password of user.'})
+    @IsString()
+    @Length(3, 40, {message: 'Password length must be at least 3 symbols and no more than 40 symbols.'})
+    readonly password: string;
+
+    @ApiProperty({example: 'NoName', description: 'Login of user.'})
+    @IsString()
+    readonly login: string;
+}

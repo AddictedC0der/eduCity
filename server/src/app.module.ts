@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { User } from './user/entities/user.entity'
 import { Role } from './user/entities/role.entity';
 import { Class } from './class/entities/class.entity'; 

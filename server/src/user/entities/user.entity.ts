@@ -3,6 +3,7 @@ import { Class } from 'src/class/entities/class.entity';
 import { Subject } from './subject.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, JoinColumn, OneToOne } from 'typeorm';
 import { Role } from './role.entity';
+import { Token } from 'src/auth/entities/token.entity';
 
 @Entity()
 export class User {
