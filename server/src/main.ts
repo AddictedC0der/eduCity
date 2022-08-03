@@ -4,8 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 
 async function bootstrap() {
-  const PORT = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule);
+  const PORT = process.env.PORT || 5000;
 
   const config = new DocumentBuilder()
     .setTitle('EduCity API')

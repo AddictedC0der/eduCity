@@ -12,10 +12,12 @@ import { Stats } from './user/entities/stats.entity';
 import { Subject } from './user/entities/subject.entity';
 import { Work } from './work/entities/work.entity';
 import { Task } from './work/entities/task.entity';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({envFilePath: `.${process.env.NODE_ENV}.env`}),
+    ConfigModule.forRoot({envFilePath: `.${process.env.NODE_ENV}.env`, isGlobal: true}),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DATABASE_HOST,
@@ -25,7 +27,10 @@ import { Task } from './work/entities/task.entity';
       database: process.env.DATABASE_NAME,
       entities: [User, Role, Stats, Subject, Class, School, Work, Task],
       synchronize: true,
-  }),],
+  }),
+  UserModule,
+  AuthModule
+],
   controllers: [AppController],
   providers: [AppService],
 })

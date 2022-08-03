@@ -1,0 +1,14 @@
+export interface IUser {
+    id: number,
+    login: string,
+    email: string,
+    password: string,
+    role: string
+}
+
+export interface IUserDto {
+    login: string,
+    email: string,
+    password: string,
+    role: string
+}

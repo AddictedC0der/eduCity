@@ -1,11 +1,17 @@
 import * as React from 'react';
 import { Box, Container, Typography, TextField, Button, Paper, Grid } from '@mui/material';
+import { AuthService } from '../../http/userAPI';
 
 
 export default function SignUp() {
 
+    const [login, setLogin] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [role, setRole] = React.useState('');
+
     const onSubmit = () => {
-        // TODO: add registration
+        AuthService.register({login, password, email, role})
     }
 
     return (

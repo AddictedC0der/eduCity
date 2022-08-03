@@ -20,7 +20,6 @@ const defaultStats: CreateStatsDto = {
 export class UserService {
     constructor(@InjectRepository(User) private UserRepository: Repository<User>,
                 @InjectRepository(Stats) private StatsRepository: Repository<Stats>,
-                @InjectRepository(Role) private RoleRepository: Repository<Role>,
                 private dataSource: DataSource) {}
 
     async createUser(userDto: CreateUserDto): Promise<any> {
@@ -126,8 +125,7 @@ export class UserService {
 
 @Injectable()
 export class RoleService {
-    constructor(@InjectRepository(Role) private RoleRepository: Repository<Role>,
-                private dataSource: DataSource) {}
+    constructor(private dataSource: DataSource) {}
     
     
     async createRole(roleDto: CreatRoleDto): Promise<InsertResult> {
