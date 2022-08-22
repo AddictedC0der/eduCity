@@ -1,14 +1,14 @@
 export interface IUser {
     id: number,
-    login: string,
-    email: string,
-    password: string,
-    role: string
+    UserLogin: string,
+    UserEmail: string,
+    UserPassword: string,
+    UserRole: string
 }
 
 export interface IUserDto {
-    login: string,
-    email: string,
-    password: string,
-    role: string
+    UserLogin: string,
+    UserEmail: string,
+    UserPassword: string,
+    UserRole: string
 }

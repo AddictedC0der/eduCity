@@ -1,7 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 import { AuthService } from "../../../http/userAPI";
-import { IUserDto } from '../../../models/user.model';
-import { AppDispatch } from "../../store";
+import { IUserDto, IUser } from '../../../models/user.model';
+import { AppDispatch } from "../../index";
 import * as types from "./types";
 import { $sys } from "../../../http";
 import { AuthResponse } from "../../../models/response/auth.response";
@@ -32,11 +32,15 @@ export const UserActionCreator = {
     register: (userDto: IUserDto) => async (dispatch: AppDispatch) => {
         try {
             dispatch(UserActionCreator.SetLoadingAction(true));
-
+            console.log('Loading')
             const { data } = await AuthService.register(userDto);
+            console.log('Registered')
             localStorage.setItem('token', data.tokens.accessToken);
+            console.log('Token set')
             dispatch(UserActionCreator.SetUserAction(data.user));
+            console.log('User set')
             dispatch(UserActionCreator.SetAuthAction(true));
+            console.log('Auth set')
         } catch(error: any) {
             dispatch(UserActionCreator.SetErrorAction(error.message));
             console.log(error);
@@ -59,8 +63,9 @@ export const UserActionCreator = {
     refreshAuth: () => async (dispatch: AppDispatch) => {
         try {
             dispatch(UserActionCreator.SetLoadingAction(true));
-
+            
             const { data } = await $sys.get<AuthResponse>('/auth/refresh');
+            console.log(data)
             localStorage.setItem('token', data.tokens.accessToken);
             dispatch(UserActionCreator.SetUserAction(data.user));
             dispatch(UserActionCreator.SetAuthAction(true));
