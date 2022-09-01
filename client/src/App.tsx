@@ -11,9 +11,11 @@ export default function App() {
     const { refreshAuth } = useActions();
     const { user, isLoading, isAuth, error } = useTypedSelector(state => state.user);
 
-    console.log(isAuth)
-    console.log(user)
-    console.log('Started!');
+    const lines = ['Выполняем квантовые рассчеты...', 'Ещё секундочку...', 'Интерполируем матрицы...', 'Загружаем ИИ...']
+
+    const getRandomInt = (max: number) => {
+        return Math.floor(Math.random() * max);
+    }
 
     React.useEffect(() => {
         if (localStorage.getItem('token')) {
@@ -24,10 +26,10 @@ export default function App() {
     return (
         <>
         {isLoading ?
-            <Box>
+            <Box sx={{width: '100%', height: '100vh'}}>
                 <Grid container direction='column' alignItems='center' justifyContent='center' sx={{height: '100%'}}>
-                    <Grid container item xs={12} justifyContent='center' alignItems='center'>
-                        <Typography>Подождите!</Typography>
+                    <Grid container item xs={12} display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
+                        <Typography>{lines[getRandomInt(lines.length)]}</Typography>
                         <CircularProgress></CircularProgress>
                     </Grid>
                     

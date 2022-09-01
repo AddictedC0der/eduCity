@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToMany, JoinColumn, JoinTable } from "typeorm";
 import { School } from "./school.entity";
-import { User } from "src/user/entities/user.entity";
+import { Student, Teacher, User } from "../../user/entities/user.entity";
+
 
 @Entity()
 export class Class {
@@ -8,13 +9,16 @@ export class Class {
     id: number
     
     @Column()
-    name: string
+    RoleName: string
 
     @OneToOne(() => School)
     @JoinColumn()
-    school: number
+    School: number
 
-    @ManyToMany(() => User)
+    @ManyToMany(() => Student, user => user.UserClass, {nullable: true})
     @JoinColumn()
-    user: User[]
+    ContainedStudents: User[];
+
+    @ManyToMany(() => Teacher, user => user.UserClass, {nullable: true})
+    ContainedTeachers: Teacher[];
 }

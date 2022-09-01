@@ -7,12 +7,12 @@ export class Task {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Work, (work) => work.tasks)
-    work: number
+    @ManyToOne(() => Work, (work) => work.Tasks)
+    ParentWork: number
 
     @Column()
-    index: number;
+    TaskIndex: number;
 
     @Column()
-    hashUi: string;
+    TaskHashUi: string;
 }

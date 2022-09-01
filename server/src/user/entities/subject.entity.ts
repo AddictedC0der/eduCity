@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToMany, OneToMany } from 'typeorm';
-import { User } from './user.entity';
-import { Work } from 'src/work/entities/work.entity';
+import { Teacher, User } from './user.entity';
+import { Work } from '../../work/entities/work.entity';
 
 @Entity()
 export class Subject {
@@ -8,8 +8,11 @@ export class Subject {
     id: number;
 
     @Column()
-    name: string;
+    SubjectName: string;
 
-    @OneToMany(() => Work, (work) => work.id)
-    works: Work[];
+    @OneToMany(() => Work, work => work.id, {nullable: true})
+    Works: Work[];
+
+    @ManyToMany(() => Teacher, teacher => teacher.UserSubject, {nullable: true})
+    Users: User[];
 }

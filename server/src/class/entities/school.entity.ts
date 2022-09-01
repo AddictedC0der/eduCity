@@ -7,8 +7,8 @@ export class School {
     id: number
 
     @Column()
-    name: string
+    SchoolName: string
 
     @Column()
-    address: string
+    Address: string
 }

@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
-import { User } from './user.entity';
+import { Student, User } from './user.entity';
 
 
 @Entity()
@@ -8,8 +8,11 @@ export class Stats {
     id: number;
 
     @Column()
-    completedWorks: number;
+    CompletedWorks: number;
 
     @Column()
-    lostWorks: number;
+    LostWorks: number;
+
+    @OneToOne(() => Student, user => user.UserStats, {nullable: true, onDelete: 'CASCADE'})
+    MasterUser: Student;
 }

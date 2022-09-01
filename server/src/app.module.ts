@@ -4,16 +4,18 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { User } from './user/entities/user.entity'
-import { Role } from './user/entities/role.entity';
+import { User, Teacher, Student, Parent } from './user/entities/user.entity'
 import { Class } from './class/entities/class.entity'; 
 import { School } from './class/entities/school.entity';
 import { Stats } from './user/entities/stats.entity';
 import { Subject } from './user/entities/subject.entity';
 import { Work } from './work/entities/work.entity';
 import { Task } from './work/entities/task.entity';
+import { Token } from './auth/entities/token.entity';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { join } from 'path';
+
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Role, Stats, Subject, Class, School, Work, Task],
+      entities: [User, Teacher, Student, Parent, Class, School, Stats, Subject, Work, Task, Token ],
       synchronize: true,
   }),
   UserModule,
@@ -35,3 +37,5 @@ import { AuthModule } from './auth/auth.module';
   providers: [AppService],
 })
 export class AppModule {}
+
+// join(__dirname, '**', '*.entity.{ts,js}')

@@ -9,11 +9,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { User } from '../user/entities/user.entity';
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Token]),
+    ConfigModule.forRoot({envFilePath: `.${process.env.NODE_ENV}.env`, isGlobal: true}),
+    TypeOrmModule.forFeature([Token, User]),
     UserModule,
     PassportModule,
     JwtModule.register({

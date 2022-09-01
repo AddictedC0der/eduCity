@@ -1,67 +1,48 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
 import { DataSource, DeleteResult, Repository } from "typeorm";
-import { UserService } from "src/user/user.service";
-import { CreateUserDto } from "src/user/dto/user.dto";
+import { UserService } from "../user/user.service";
+import { CreateUserDto } from "../user/dto/user.dto";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Token } from "./entities/token.entity";
-import { User } from "src/user/entities/user.entity";
+import { User } from "../user/entities/user.entity";
 import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
 export class TokenService {
     constructor(private jwtService: JwtService,
-                @InjectRepository(Token) TokenRepository: Repository<Token>,
-                private dataSource: DataSource) {}
+                @InjectRepository(Token) private TokenRepo: Repository<Token>,
+                @InjectRepository(User) private UserRepo: Repository<User>) {}
     
     async createToken(user: User): Promise<any> {
-        const payload = {login: user.login, email: user.email, sub: user.id}
+        console.log(user)
+        const payload = {login: user.UserLogin, sub: user.UserPassword}
+        console.log(payload)
         const accessToken = this.jwtService.sign(payload, {expiresIn: '30m'})
         const refreshToken = this.jwtService.sign(payload, {expiresIn: '30d'})
         return {accessToken, refreshToken}
     }
 
     async deleteToken(token): Promise<DeleteResult> {
-        const response = await this.dataSource.createQueryBuilder()
-                                            .delete()
-                                            .from(Token)
-                                            .where('token.refreshToken = :refreshToken', {refreshToken: token})
-                                            .execute()
+        const response = await this.TokenRepo.delete({refreshToken: token})
         return response;
     }
 
     async setToken(userId: number, token: string) {
-        const data = await this.dataSource.createQueryBuilder()
-                                    .relation(User, 'token')
-                                    .of(userId)
-                                    .loadOne()
-        if (data) {
-            const response = await this.dataSource.createQueryBuilder()
-                                        .update(Token)
-                                        .set({...data, refreshToken: token})
-                                        .where('id = :id', {id: data.id})
+        const data = await this.UserRepo.findOne({where: {id: userId}, relations: {Token: true}});
+        if (data.Token) {
+            const response = await this.TokenRepo.update({id: data.Token.id}, {...data.Token, refreshToken: token});
             return response;
         }
-        const user = await this.dataSource.createQueryBuilder()
-                                        .select('user')
-                                        .from(User, 'user')
-                                        .where('user.id = :id', {id: userId})
-                                        .execute()
-        const response = await this.dataSource.createQueryBuilder()
-                                            .insert()
-                                            .into(Token)
-                                            .values([{refreshToken: token, userId: user}])
-                                            .execute()
+        const response = this.TokenRepo.create({refreshToken: token, UserId: data});
+        await this.TokenRepo.save(response);
+
         return response;
     }
 
     async getToken(token: string): Promise<Token> {
-        const response = await this.dataSource.createQueryBuilder()
-                                            .select('token')
-                                            .from(Token, 'token')
-                                            .where('token.refreshToken = :refreshToken', {refreshToken: token})
-                                            .execute()
+        const response = await this.TokenRepo.findOne({where: {refreshToken: token}})
         return response;
     }
 
@@ -80,31 +61,30 @@ export class TokenService {
 @Injectable()
 export class AuthService {
     constructor(private userService: UserService,
-                private tokenService: TokenService,
-                private dataSource: DataSource) {}
+                private tokenService: TokenService) {}
     
     async validateUser(login: string, password: string) {
-        const user = await this.userService.getUserByName(login);
-        if (user && user.password === password) {
+        const user = await this.userService.getUserByName(login)[0];
+        if (user && user.UserPassword === password) {
             return user;
         }
         return null;
     }
 
     async login(user: User): Promise<any> {
-        const validated_user = await this.validateUser(user.login, user.password);
+        const validated_user = await this.validateUser(user.UserLogin, user.UserPassword);
         const tokens = await this.tokenService.createToken(validated_user);
         await this.tokenService.setToken(validated_user.id, tokens.refreshToken);
         return {user: validated_user, tokens: tokens};
     }
 
     private async validateRequest(requestDto: CreateUserDto) {
-        let existing = await this.userService.getUserByEmail(requestDto.email);
-        if (existing) {
+        let existing = await this.userService.getUserByEmail(requestDto.UserEmail);
+        if (existing.length) {
             throw new HttpException('User with such email already exists.', HttpStatus.BAD_REQUEST);
         }
-        existing = await this.userService.getUserByName(requestDto.login);
-        if (existing) {
+        existing = await this.userService.getUserByName(requestDto.UserLogin);
+        if (existing.length) {
             throw new HttpException('User with such login already exists.', HttpStatus.BAD_REQUEST);
         }
     }
@@ -112,10 +92,9 @@ export class AuthService {
     async register(userDto: CreateUserDto): Promise<any> {
         this.validateRequest(userDto);
         
-        const hashed_password = await bcrypt.hash(userDto.password, 10);
-        const user = await this.userService.createUser({...userDto, password: hashed_password});
-
-        const tokens = await this.tokenService.createToken(user);
+        const hashed_password = await bcrypt.hash(userDto.UserPassword, 10);
+        const user = await this.userService.createUser({...userDto, UserPassword: hashed_password});
+        const tokens = await this.tokenService.createToken(user.user);
         await this.tokenService.setToken(user.id, tokens.refreshToken);
 
         return {user: user, tokens: tokens};
@@ -132,6 +111,8 @@ export class AuthService {
         }
         const user_candidate = await this.tokenService.validateToken(token);
         const is_in_db = await this.tokenService.getToken(token);
+        console.log(user_candidate)
+        console.log(is_in_db)
         if (!user_candidate || !is_in_db) {
             throw new UnauthorizedException({message: 'User is not authorized.'});
         }

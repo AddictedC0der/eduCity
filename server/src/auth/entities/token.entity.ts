@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
-import { User } from "src/user/entities/user.entity";
+import { User } from "../../user/entities/user.entity";
 
 
 @Entity()
@@ -10,7 +10,6 @@ export class Token {
     @Column()
     refreshToken: string;
 
-    @OneToOne(() => User)
-    @JoinColumn()
-    userId: User;
+    @OneToOne(() => User, user => user.Token, {onDelete: 'CASCADE'})
+    UserId: User;
 }
