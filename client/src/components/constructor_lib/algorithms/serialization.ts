@@ -1,0 +1,102 @@
+import * as React from 'react';
+import * as Types from '../types';
+import * as Constants from '../Constants';
+import shortid from 'shortid';
+import { ComponentsRepository } from '../ComponentsRepository';
+import { createConstructorStore } from '../Session';
+
+/*
+    Hash example: TxtInt-W:200px.H:200px.X:282.34375.Y:197.1875.TXT:Lorem ipsum.TC:#000000
+    Hash template: T-P/T-P/T-P
+    T - Component type (Txt, Btn, Cbx...)
+    P - Component properties (W:30.H:20.BC:#fff.TC:#000)
+
+    Legend:
+    Width - W
+    Height - H
+    BackgroundColor - BC
+    TextColor - TC
+    Checked - Cd
+    Text - Txt
+*/
+
+
+function _readProperties(properties: Types.IPropertiesLike): string {
+    function _readArray(arrOfDescriptors: string[], dataTrasferObj: any): string {
+        let temp: string = ''
+        for (let p = 0; p < arrOfDescriptors.length; p++) {
+            //@ts-ignore
+            const processedName = Constants.CodeTable.Properties[arrOfDescriptors[p]];
+            const chunk = `${processedName}:${dataTrasferObj[arrOfDescriptors[p]]}.`;
+            temp += chunk;
+        }
+        return temp;
+    }
+
+    let result: string = '';
+    const baseProperties = Object.getOwnPropertyNames(properties.Base);
+    const localProperties = Object.getOwnPropertyNames(properties.Local);
+    
+    result += _readArray(baseProperties, properties.Base);
+    result += _readArray(localProperties, properties.Local);
+
+    result = result.slice(0, -1);
+    return result;
+}
+
+function _createProperties(descriptor: string): Types.IPropertiesLike {
+    //@ts-ignore
+    let response: Types.IPropertiesLike = {Base: {}, Local: {}};
+    const chunks = descriptor.split('.');
+    for (let i = 0; i < chunks.length; i++) {
+        const [key, value] = chunks[i].split(':');
+        const property = Constants.ShortcutToProperty(key) as string;
+        console.log(property)
+        if (Constants.CodeTable.PropertiesGroups.Base.find(e => e === property.toString())) {
+            //@ts-ignore
+            response.Base[property] = value;
+        } else {
+            //@ts-ignore
+            response.Local[property] = value;
+        }
+    }
+    return response;
+}
+
+
+export function SerializeUI(repository: Types.RepositoryElement[][]): string[] {
+    const response: string[] = [];
+    let currentPage: string = '';
+    for (let page = 0; page < repository.length; page++) {
+        for (let e = 0; e < repository[page].length; e++) {
+            //@ts-ignore
+            const comp = repository[page][e].component.type.name;
+            const T = (Constants.CodeTable.Components as any)[comp];
+            const properties = repository[page][e].properties;
+            const processedProperties = _readProperties(properties);
+            const chunk = `${T}-${processedProperties}/`;
+            currentPage += chunk;
+        }
+        currentPage = currentPage.slice(0, -1);
+        response.push(currentPage);
+    }
+    return response;
+}
+
+
+function _createComponent(descriptor: string, repo: any, parent: any) {
+    const T = descriptor.split('-')[0];
+    const tool = Constants.findToolById(T) as Types.ToolType;
+    const properties = _createProperties(descriptor.split('-')[1]);
+    const component = repo.createComponent(tool, parent, {X: properties.Base.X, Y: properties.Base.Y}, 'U', properties);
+}
+
+export function DeserializeUI(hash: string, parent: any): any {
+    const store = React.useMemo(() => createConstructorStore(Constants.initialConstructorState), []);
+    const response = new ComponentsRepository(store)
+    const components = hash.split('/');
+    for (let i = 0; i < components.length; i++) {
+        _createComponent(components[i], response, parent);
+    }
+    return response;
+}

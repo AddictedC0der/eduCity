@@ -12,6 +12,27 @@ export class Work {
     @ManyToOne(() => Subject, (subject) => subject.Works)
     Subject: Subject;
 
+    @Column()
+    Name: string;
+
+    @Column()
+    Author: string;
+
+    @Column()
+    AutoChecking: boolean;
+
+    @Column()
+    AdvancedChecking: boolean;
+
+    @Column()
+    Time: number;
+
+    @Column()
+    AdditionalTime: number;
+
+    @Column()
+    Privacy: string;
+
     @OneToMany(() => Task, (task) => task.ParentWork)
     Tasks: Task[]
 }

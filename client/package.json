@@ -12,18 +12,31 @@
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
+    "@mui/icons-material": "^5.10.3",
+    "@mui/lab": "^5.0.0-alpha.97",
     "@mui/material": "^5.9.1",
+    "@mui/x-data-grid": "^5.17.4",
+    "@mui/x-date-pickers": "^5.0.7",
     "@reduxjs/toolkit": "^1.8.3",
     "axios": "^0.27.2",
+    "dayjs": "^1.11.6",
+    "mui-color-input": "^1.0.2",
     "react": "^18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.5",
     "react-redux": "^8.0.2",
+    "react-resizable": "^3.0.4",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
-    "redux": "^4.2.0"
+    "redux": "^4.2.0",
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
-    "@types/react-dom": "^18.0.6"
+    "@types/react-dom": "^18.0.6",
+    "@types/react-resizable": "^3.0.3",
+    "@types/shortid": "^0.0.29"
   },
   "browserslist": {
     "production": [

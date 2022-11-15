@@ -78,7 +78,7 @@ describe('AuthService', () => {
     describe('login', () => {
         it('should login user and return its data', async () => {
             const loginUserSpy = jest.spyOn(authService, 'login');
-            const testDto = new User()
+            const testDto: CreateUserDto = {UserEmail: 'ipsum@mail.ru', UserLogin: 'lorem', UserPassword: '12345', UserRole: 'Student'}
             await authService.login(testDto)
             expect(loginUserSpy).toHaveBeenCalledWith(testDto)
         })

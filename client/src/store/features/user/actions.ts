@@ -15,9 +15,11 @@ export const UserActionCreator = {
 
     login: (login: string, password: string) => async (dispatch: AppDispatch) => {
         try {
+            console.log('Action called!')
             dispatch(UserActionCreator.SetLoadingAction(true));
-
+            console.log('Loading set!')
             const { data } = await AuthService.login(login, password);
+            console.log('Data got!')
             localStorage.setItem('token', data.tokens.accessToken);
             dispatch(UserActionCreator.SetUserAction(data.user));
             dispatch(UserActionCreator.SetAuthAction(true))
@@ -32,15 +34,10 @@ export const UserActionCreator = {
     register: (userDto: IUserDto) => async (dispatch: AppDispatch) => {
         try {
             dispatch(UserActionCreator.SetLoadingAction(true));
-            console.log('Loading')
             const { data } = await AuthService.register(userDto);
-            console.log('Registered')
             localStorage.setItem('token', data.tokens.accessToken);
-            console.log('Token set')
             dispatch(UserActionCreator.SetUserAction(data.user));
-            console.log('User set')
             dispatch(UserActionCreator.SetAuthAction(true));
-            console.log('Auth set')
         } catch(error: any) {
             dispatch(UserActionCreator.SetErrorAction(error.message));
             console.log(error);

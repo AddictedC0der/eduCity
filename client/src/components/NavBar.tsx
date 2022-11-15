@@ -39,21 +39,9 @@ function UserSection() {
 
 
 export function NavBar(props: any) {
-    const [contentHeight, setContentHeight] = React.useState(0);
-
-    const headerRef = React.useRef(null)
-    const contentRef = React.useRef(null)
-    const footerRef = React.useRef(null)
-
-    React.useEffect(() => {
-        //@ts-ignore
-        setContentHeight(contentRef.current.offsetHeight + headerRef.current.offsetHeight + footerRef.current.offsetHeight + 2);
-    }, [])
-
     return (
-        <Grid container direction='column' sx={{maxWidth: '100%', height: contentHeight}} aria-label='MainGrid' columns={1}>
-            <Grid ref={headerRef} container item xs={1} sx={{maxHeight: '10vh', backgroundColor: '#5CDB95'}} aria-label='HeaderMainGrid'>
-                <Box sx={{color: '#EDF5E1', padding: '1%', width: '100%'}} aria-label='NavBarBox'>
+            <Grid container item sx={{ backgroundColor: '#5CDB95', width: '100%'}} aria-label='HeaderMainGrid'>
+                <Box sx={{color: '#EDF5E1', padding: '1%', width: '100vw'}} aria-label='NavBarBox'>
                     <Grid container item direction='row' aria-label='NavBarGrid'>
                         <Grid item aria-label='UserSectionGrid'>
                             <UserSection />
@@ -68,12 +56,5 @@ export function NavBar(props: any) {
                     </Grid>
                 </Box>
             </Grid>
-            <Grid ref={contentRef} container item xs={1} aria-label='ChildrenGrid'>
-                {props.children}
-            </Grid>
-            <Grid ref={footerRef} container item xs={1} aria-label='FooterGrid'>
-                <Footer />
-            </Grid>
-        </Grid>
     )
 }

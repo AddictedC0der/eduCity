@@ -6,6 +6,7 @@ import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Token } from "./entities/token.entity";
 import { User } from "../user/entities/user.entity";
+import { UserDto } from '../user/dto/user.dto';
 import * as bcrypt from 'bcrypt';
 
 
@@ -16,9 +17,7 @@ export class TokenService {
                 @InjectRepository(User) private UserRepo: Repository<User>) {}
     
     async createToken(user: User): Promise<any> {
-        console.log(user)
-        const payload = {login: user.UserLogin, sub: user.UserPassword}
-        console.log(payload)
+        const payload = {login: user.UserLogin, sub: user.id}
         const accessToken = this.jwtService.sign(payload, {expiresIn: '30m'})
         const refreshToken = this.jwtService.sign(payload, {expiresIn: '30d'})
         return {accessToken, refreshToken}
@@ -64,6 +63,8 @@ export class AuthService {
                 private tokenService: TokenService) {}
     
     async validateUser(login: string, password: string) {
+        const demo = await this.userService.getUserByName(login)
+        console.log(demo)
         const user = await this.userService.getUserByName(login)[0];
         if (user && user.UserPassword === password) {
             return user;
@@ -71,8 +72,11 @@ export class AuthService {
         return null;
     }
 
-    async login(user: User): Promise<any> {
-        const validated_user = await this.validateUser(user.UserLogin, user.UserPassword);
+    async login(user: UserDto): Promise<any> {
+        console.log(user)
+        const hashed_password = await bcrypt.hash(user.UserPassword, 10); 
+        const validated_user = await this.validateUser(user.UserLogin, hashed_password);
+        console.log(validated_user)
         const tokens = await this.tokenService.createToken(validated_user);
         await this.tokenService.setToken(validated_user.id, tokens.refreshToken);
         return {user: validated_user, tokens: tokens};
@@ -110,9 +114,9 @@ export class AuthService {
             throw new UnauthorizedException({message: 'User is not authorized.'});
         }
         const user_candidate = await this.tokenService.validateToken(token);
+
         const is_in_db = await this.tokenService.getToken(token);
-        console.log(user_candidate)
-        console.log(is_in_db)
+
         if (!user_candidate || !is_in_db) {
             throw new UnauthorizedException({message: 'User is not authorized.'});
         }

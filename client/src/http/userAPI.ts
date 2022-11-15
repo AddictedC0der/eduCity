@@ -6,13 +6,11 @@ import { $api } from ".";
 
 export class AuthService {
     static async login(login: string, password: string): Promise<AxiosResponse<AuthResponse>> {
+        console.log('Sending')
         return $api.post<AuthResponse>('/auth/login', {login, password});
     }
     static async register(userDto: IUserDto): Promise<AxiosResponse<AuthResponse>> {
-        console.log('Sending')
-        console.log(userDto)
         const response = $api.post<AuthResponse>('/auth/register', userDto);
-        console.log(response)
         return response
     }
     static async logout(): Promise<void> {

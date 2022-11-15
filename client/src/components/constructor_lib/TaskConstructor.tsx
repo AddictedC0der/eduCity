@@ -1,0 +1,72 @@
+import * as React from 'react';
+import { MainLayout } from '../layouts/MainLayout';
+import { Box, Pagination, Fab, Grid, Button } from '@mui/material';
+import { ConstructorCanvas } from './constructor_elements/Canvas';
+import { Toolbar } from './constructor_elements/Toolbar';
+import { PropertiesArea } from './constructor_elements/PropertiesArea';
+import { createConstructorStore } from './Session';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import * as Constants from './Constants';
+import * as Types from './types';
+import { useConstructorStore } from '../../hooks/useConstructorStore';
+import { ComponentsRepository } from './ComponentsRepository';
+import AddIcon from '@mui/icons-material/Add';
+import { CreateWorkDialog } from '../dialogs/CreateWork';
+
+
+
+
+export function TaskConstructor() {
+    const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    }
+
+    const store = React.useMemo(() => createConstructorStore(Constants.initialConstructorState), []);
+    const currentPage = useConstructorStore(store, React.useCallback((state: Types.IConstructorState) => state.currentPage, []));
+    const totalPages = useConstructorStore(store, React.useCallback((state: Types.IConstructorState) => state.totalPages, []));
+
+    const componentsRepo = React.useMemo(() => new ComponentsRepository(store), [])
+
+
+    const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+        store.setState((prev: Types.IConstructorState) => ({...prev, currentPage: value}));
+    }
+
+    const handleAddPage = () => {
+        store.setState((prev: Types.IConstructorState) => ({...prev, totalPages: prev.totalPages + 1, currentPage: prev.totalPages + 1}));
+    }
+
+    return (
+        <MainLayout paddingMain='NONE'>
+            <DndProvider backend={HTML5Backend}>
+                <Grid container sx={{display: 'flex', flexDirection: 'row', width: '100%', height: '100vh'}} columnSpacing={2}>
+                    <Grid item xs={2}>
+                        <Toolbar />
+                    </Grid>
+                    <Grid container item xs sx={{width: '100%'}}>
+                        <ConstructorCanvas repo={componentsRepo} store={store} />
+                        <Grid item xs={2} />
+                        <Grid item xs sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                            <Pagination count={totalPages} page={currentPage} onChange={handleChangePage}
+                                sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} />
+                            <Fab size='small' onClick={handleAddPage}>
+                                <AddIcon />
+                            </Fab>
+                        </Grid>
+                        <Grid item xs={2}>
+                            <Button variant='contained' onClick={() => setOpenDialog(true)}>Создать</Button>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <PropertiesArea store={store} repo={componentsRepo} />
+                    </Grid>
+                </Grid>
+            </DndProvider>
+
+            <CreateWorkDialog open={openDialog} onClose={handleCloseDialog} repo={componentsRepo.repository} />
+        </MainLayout>
+    )
+}

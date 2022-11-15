@@ -6,7 +6,7 @@ import { Class } from 'src/class/entities/class.entity';
 import { Subject } from './entities/subject.entity';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import mockRepository from '@nestjs/typeorm';
+
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Teacher, Student, Parent, Stats, Subject, Class])],

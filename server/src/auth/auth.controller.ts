@@ -11,13 +11,14 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @ApiOperation({summary: 'Login user'})
-    @ApiResponse({status: 201, description: 'User has been successfully logged in.', type: User})
+    @ApiResponse({status: 201, description: 'User has been successfully logged in.'})
     @UseGuards(LocalAuthGuard)
     @UsePipes(ValidationPipe)
     @Post('/login')
     async login(@Request() request, @Response({passthrough: true}) response) {
+        console.log('Request got!')
+        console.log(request)
         const data = await this.authService.login(request.user);
-        console.log(data)
         response.cookie('refreshToken', data.tokens.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true});
         return data;
     }

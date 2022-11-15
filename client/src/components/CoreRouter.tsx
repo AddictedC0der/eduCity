@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { PublicRoutes, PrivateRoutes, RoutesEnum } from '../router';
+import { TaskConstructor } from './constructor_lib/TaskConstructor'
+import { TaskView } from './pages/TaskView';
 
 
 export function CoreRouter() {
@@ -16,7 +18,7 @@ export function CoreRouter() {
         <>
         <Routes>
             {!isAuth ?
-                PublicRoutes.map(route => <Route path={route.path} element={<route.element />} key={route.path} />)
+                PublicRoutes.map(route => <Route path={route.path} element={<TaskView />} key={route.path} />)
                 : PrivateRoutes.map(route => <Route path={route.path} element={<route.element />} key={route.path} />)}
         </Routes>
         </>

@@ -15,6 +15,8 @@ import { Token } from './auth/entities/token.entity';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { join } from 'path';
+import { ClassModule } from './class/class.module';
+import { ChatMessage } from './class/entities/chat_message.entity';
 
 
 @Module({
@@ -27,11 +29,12 @@ import { join } from 'path';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Teacher, Student, Parent, Class, School, Stats, Subject, Work, Task, Token ],
+      entities: [User, Teacher, Student, Parent, Class, School, Stats, Subject, Work, Task, Token, ChatMessage],
       synchronize: true,
   }),
   UserModule,
-  AuthModule
+  AuthModule,
+  ClassModule
 ],
   controllers: [AppController],
   providers: [AppService],

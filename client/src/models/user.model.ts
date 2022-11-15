@@ -12,3 +12,8 @@ export interface IUserDto {
     UserPassword: string,
     UserRole: string
 }
+
+export interface IUserLogin {
+    UserLogin: string,
+    UserPassword: string
+}

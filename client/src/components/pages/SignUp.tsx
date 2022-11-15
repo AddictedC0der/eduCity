@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Box, Container, Typography, TextField, Button, Paper, Grid, CssBaseline, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Box, Container, Typography, TextField, Button, Paper, Grid, CssBaseline, ToggleButtonGroup, ToggleButton, Link } from '@mui/material';
 import { IUserDto } from '../../models/user.model';
 import { useActions } from '../../hooks/useActions';
+import { useNavigate, useLocation } from 'react-router-dom'
 
 
 type Role = {name: string, label: string}
@@ -16,6 +17,7 @@ export default function SignUp() {
 
     const [role, setRole] = React.useState<Role>(roles[0]);
     const { register } = useActions();
+    const navigate = useNavigate()
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -84,6 +86,7 @@ export default function SignUp() {
                             <ToggleButton value={roles[2]}>Родитель</ToggleButton>
                         </ToggleButtonGroup>
                         <Button type='submit' variant='contained' fullWidth>Зарегестрироваться</Button>
+                        <Link onClick={() => navigate('../login')}>Уже есть аккаунт?</Link>
                     </Box>
                 </Paper>
             </Container>

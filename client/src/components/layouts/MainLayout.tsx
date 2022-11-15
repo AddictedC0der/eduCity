@@ -1,14 +1,18 @@
 import * as React from 'react';
-import { Box, Grid, Typography, Button } from '@mui/material';
+import { Box, Grid, Typography, Button, Snackbar, Alert } from '@mui/material';
+import { Masonry } from '@mui/lab';
 import { NavBar } from '../NavBar';
 import { Footer } from '../Footer';
+import * as types from '../../models/layout.model';
+
 
 type MainLayoutProps = {
-    children: React.ReactNode
+    paddingMain: types.paddingMain;
+    children?: React.ReactNode;
 }
 
 
-export function MainLayout(props: MainLayoutProps) {
+export const MainLayout: React.FC<MainLayoutProps> = ({children, paddingMain}) => {
     const [warning, setWarning] = React.useState(true);
 
     const hideWarning = () => {
@@ -23,12 +27,23 @@ export function MainLayout(props: MainLayoutProps) {
         </Box>)
     : null
 
+    const paddingValue: any = types.paddingConstants[paddingMain]
     return (
-        <NavBar>
-            {warningLabel}
-            <Box sx={{width: '100%', height: '100%', padding: '5%'}} aria-label='MainLayoutBox'>
-                {props.children}
-            </Box>
-        </NavBar>
+        <Masonry sx={{maxWidth: '100vw', minHeight: '98vh'}} aria-label='MainGrid' columns={1} spacing={0}>
+            <Grid container item width='100%'>
+                <NavBar />
+            </Grid>
+            <Grid container item sx={{width: '100%', boxSizing: 'border-box', ...paddingValue}}>
+                {children}
+            </Grid>
+            <Grid item width='100%'>
+                <Footer />
+            </Grid>
+            <Snackbar open={warning} onClose={hideWarning}>
+                <Alert onClose={hideWarning} severity="warning">
+                    У вас есть невыполненные задания!
+                </Alert>
+            </Snackbar>
+        </Masonry>
     )
 }
