@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
 import { Subject } from '../../user/entities/subject.entity';
-import { User } from '../../user/entities/user.entity';
+import { Teacher, User } from '../../user/entities/user.entity';
 import { Task } from './task.entity';
 
 
@@ -10,13 +10,19 @@ export class Work {
     id: number;
 
     @ManyToOne(() => Subject, (subject) => subject.Works)
-    Subject: Subject;
+    Category: Subject;
 
     @Column()
     Name: string;
 
+    @OneToMany(() => Teacher, teacher => teacher.Works)
+    Author: Teacher;
+
     @Column()
-    Author: string;
+    Class: number
+
+    @Column()
+    Difficulty: number;
 
     @Column()
     AutoChecking: boolean;
@@ -25,10 +31,10 @@ export class Work {
     AdvancedChecking: boolean;
 
     @Column()
-    Time: number;
+    Time: string;
 
     @Column()
-    AdditionalTime: number;
+    AdditionalTime: string;
 
     @Column()
     Privacy: string;

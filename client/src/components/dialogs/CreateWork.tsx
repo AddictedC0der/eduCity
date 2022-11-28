@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Autocomplete, useMediaQuery,
-    Checkbox, TextField, FormControlLabel, Button, Stepper, Step, StepLabel, Typography, Grid } from '@mui/material';
+    Checkbox, TextField, FormControlLabel, Button, Stepper, Step, StepLabel, Typography, Grid, Slider } from '@mui/material';
 import subjects from '../../Assets/subjects.json';
 import { TooltipWrapper } from '../complex/Tooltip';
 import { StaticTimePicker } from '@mui/x-date-pickers';
@@ -10,23 +10,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { NonNullablePickerChangeHandler } from '@mui/x-date-pickers/internals/hooks/useViews';
 import { SerializeUI } from '../constructor_lib/algorithms/serialization'; 
 import * as Types from '../constructor_lib/types';
+import { ConstructorService } from '../../http/constructorAPI';
+import { IWork, ITask } from '../../models/constructor.model';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 /*
     Main page: name, section, amount of tasks, use advanced checking system
     Time page: limit, addition time after completion of singular task
     Privacy page: Who has access (me, my class(es), everyone)
 */
-
-
-interface TaskData {
-    name: string;
-    category: string;
-    autoChecking: boolean;
-    advanceChecking: boolean;
-    timeLimit: Dayjs | null;
-    additionalTime: Dayjs | null;
-    privacy: 'ME' | 'CLASS' | 'PUBLIC';
-}
 
 
 interface DialogPageProps {
@@ -82,7 +74,7 @@ function DialogPrivacyPage(props: DialogPageProps) {
         <>
         <div style={{height: '90%'}}>
             <FormControlLabel control={
-                <Autocomplete value={findOptionByType(formData.privacy)} options={options}
+                <Autocomplete value={findOptionByType(formData.Privacy)} options={options}
                             onChange={(e, newValue) => setFormData({type: 'setPrivacy', payload: newValue ? newValue.type : 'ME'})}
                             renderInput={params => <TextField {...params} />} sx={{width: '100%'}} />
             } label='Кто может решать вашу работу' labelPlacement='start' sx={{columnGap: '5%'}} />
@@ -104,11 +96,11 @@ function DialogTimePage(props: DialogPageProps) {
 
     const handleLimitActivation = (event: any) => {
         if (!event.target.checked) {
-            setFormData({type: 'setTime', payload: null});
-            setFormData({type: 'setAddTime', payload: null});
+            setFormData({type: 'setTime', payload: dayjs('00:00:00', 'hh:mm:ss').toString()});
+            setFormData({type: 'setAddTime', payload: dayjs('00:00:00', 'hh:mm:ss').toString()});
         } else {
-            setFormData({type: 'setTime', payload: dayjs('00:30:00', 'hh:mm:ss')});
-            setFormData({type: 'setAddTime', payload: dayjs('00:00:00', 'hh:mm:ss')});
+            setFormData({type: 'setTime', payload: dayjs('00:30:00', 'hh:mm:ss').toString()});
+            setFormData({type: 'setAddTime', payload: dayjs('00:00:00', 'hh:mm:ss').toString()});
         }
     }
 
@@ -118,19 +110,19 @@ function DialogTimePage(props: DialogPageProps) {
         <div style={{height: '90%', width: '100%', display: 'flex', flexDirection: 'column', rowGap: '5%'}}>
             
             <FormControlLabel sx={{columnGap: '1%'}} control={
-                <Checkbox checked={formData.timeLimit ? true : false} onChange={handleLimitActivation} sx={{width: '100%'}} />}
+                <Checkbox checked={formData.Time !== dayjs('00:00:00', 'hh:mm:ss').toString() ? true : false} onChange={handleLimitActivation} sx={{width: '100%'}} />}
                 label='Время ограничено' labelPlacement='start' />
-            {formData.timeLimit ?
+            {formData.Time ?
             (<div style={{rowGap: '5%'}}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
             
                 <StaticTimePicker showToolbar={true} toolbarTitle='Время работы'
                                 views={['hours', 'minutes', 'seconds']} ampm={false} orientation="landscape"
-                                value={formData.timeLimit} onChange={(newDate) => setFormData({type: 'setTime', payload: newDate})}
+                                value={formData.Time} onChange={(newDate) => setFormData({type: 'setTime', payload: newDate})}
                                 renderInput={(params) => <TextField {...params} />} />
                 <StaticTimePicker showToolbar={true} toolbarTitle='Добавочное время'
                                 views={['hours', 'minutes', 'seconds']} ampm={false} orientation="landscape"
-                                value={formData.additionalTime} onChange={(newDate) => setFormData({type: 'setAddTime', payload: newDate})}
+                                value={formData.AdditionalTime} onChange={(newDate) => setFormData({type: 'setAddTime', payload: newDate})}
                                 renderInput={(params) => <TextField {...params} />} />
             </LocalizationProvider>
                     
@@ -154,27 +146,76 @@ function DialogMainPage(props: DialogPageProps) {
         return response;
     }
 
+    React.useEffect(() => {
+        console.log(formData.Difficulty)
+    }, [formData.Difficulty])
+
     return (
         <>
         <div style={{height: '90%', display: 'flex', flexDirection: 'column', rowGap: '5%', justifyContent: 'flex-start', alignItems: 'flex-start'}}>
             <FormControlLabel sx={{columnGap: '1%'}} control={
-                <TextField value={formData.name} onChange={e => setFormData({type: 'setName', payload: e.target.value})}
+                <TextField value={formData.Name} onChange={e => setFormData({type: 'setName', payload: e.target.value})}
                 placeholder='Делимость чисел' sx={{width: '100%'}} />}
                 label='Название работы' labelPlacement='start' />
 
             <FormControlLabel control={
-                <Autocomplete value={formData.category}
+                <Autocomplete value={formData.Category}
                 onChange={(e, newValue) => setFormData({type: 'setCategory', payload: newValue})}
                 options={generateOptions()} renderInput={params => <TextField {...params} label='Категория' />}
                 sx={{width: '100%'}} />} sx={{width: '100%'}}
                 label='Категория работы' labelPlacement='start' />
             
+            <FormControlLabel control={
+                <Autocomplete value={formData.Class.toString()}
+                onChange={(e, newValue) => setFormData({type: 'setClass', payload: parseInt(newValue)})}
+                options={['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']} renderInput={params => <TextField {...params} label='Класс' />}
+                sx={{width: '100%'}} />} sx={{width: '100%'}}
+                label='Класс' labelPlacement='start' /> 
+
+            <Slider marks={true} min={1} max={10} step={1} value={formData.Difficulty} onChange={(e, newValue) => setFormData({type: 'setDifficulty', payload: (newValue as number)})}
+                    sx={{color: `rgb(${formData.Difficulty*20}, ${255 - formData.Difficulty*20}, 77)`,
+                    height: 8,
+                    '& .MuiSlider-track': {
+                      border: 'none',
+                    },
+                    '& .MuiSlider-thumb': {
+                      height: 24,
+                      width: 24,
+                      backgroundColor: '#fff',
+                      border: '2px solid currentColor',
+                      '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
+                        boxShadow: 'inherit',
+                      },
+                      '&:before': {
+                        display: 'none',
+                      },
+                    },
+                    '& .MuiSlider-valueLabel': {
+                      lineHeight: 1.2,
+                      fontSize: 12,
+                      background: 'unset',
+                      padding: 0,
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50% 50% 50% 0',
+                      backgroundColor: `rgb(${formData.Difficulty*20}, ${255 - formData.Difficulty*20}, 77)`,
+                      transformOrigin: 'bottom left',
+                      transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
+                      '&:before': { display: 'none' },
+                      '&.MuiSlider-valueLabelOpen': {
+                        transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
+                      },
+                      '& > *': {
+                        transform: 'rotate(45deg)',
+                      },
+                    },}} valueLabelDisplay="auto" />
+
             <FormControlLabel sx={{columnGap: '1%', width: '100%'}} control={
-                <Checkbox checked={formData.autoChecking} onChange={e => setFormData({type: 'setChecking', payload: e.target.checked})}
+                <Checkbox checked={formData.AutoChecking} onChange={e => setFormData({type: 'setChecking', payload: e.target.checked})}
                  />} label='Автоматическая проверка' labelPlacement='start' />
 
             <FormControlLabel sx={{columnGap: '1%', width: '100%'}} control={
-                <Checkbox checked={formData.advanceChecking} onChange={e => setFormData({type: 'setAdvChecking', payload: e.target.checked})}
+                <Checkbox checked={formData.AdvancedChecking} onChange={e => setFormData({type: 'setAdvChecking', payload: e.target.checked})}
                  />} label='Продвинутая проверка' labelPlacement='start' />
         </div>
         </>
@@ -192,38 +233,50 @@ interface CreateWorkDialogProps {
 export function CreateWorkDialog(props: CreateWorkDialogProps) {
     const steps = ['Общие настройки', 'Насткройки времени', 'Настройки доступа'];
 
-    const initial: TaskData = {
-        name: 'Делимость чисел',
-        category: 'Математика',
-        autoChecking: false,
-        advanceChecking: false,
-        timeLimit: null,
-        additionalTime: null,
-        privacy: 'ME'
+    const { user } = useTypedSelector(state => state.user);
+
+    const initial: IWork = {
+        Name: 'Делимость чисел',
+        Author: user.id,
+        Category: 'Математика',
+        Difficulty: 3,
+        Class: 9,
+        AutoChecking: false,
+        AdvancedChecking: false,
+        Time: dayjs('00:00:00', 'hh:mm:ss').toString(),
+        AdditionalTime: dayjs('00:00:00', 'hh:mm:ss').toString(),
+        Privacy: 'ME',
+        Tasks: []
     }
 
-    const formReducer = (state: any, action: any) => {
+    const formReducer = (state: IWork, action: {type: string, payload: any}) => {
         switch(action.type) {
             case 'setName': {
-                return {...state, name: action.payload}
+                return {...state, Name: action.payload};
             }
             case 'setCategory': {
-                return {...state, category: action.payload ?? 'Математика'}
+                return {...state, Category: action.payload ?? 'Математика'};
+            }
+            case 'setDifficulty': {
+                return {...state, Difficulty: action.payload};
+            }
+            case 'setClass': {
+                return {...state, Class: action.payload};
             }
             case 'setChecking': {
-                return {...state, autoChecking: action.payload}
+                return {...state, AutoChecking: action.payload};
             }
             case 'setAdvChecking': {
-                return {...state, advanceChecking: action.payload}
+                return {...state, AdvancedChecking: action.payload};
             }
             case 'setTime': {
-                return {...state, timeLimit: action.payload}
+                return {...state, TimeLimit: action.payload};
             }
             case 'setAddTime': {
-                return {...state, additionalTime: action.payload}
+                return {...state, AdditionalTime: action.payload};
             }
             case 'setPrivacy': {
-                return {...state, privacy: action.payload}
+                return {...state, Privacy: action.payload};
             }
             default: {
                 throw new Error(`Unknown action type: ${action.type}`);
@@ -231,12 +284,9 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
         }
     }
 
-    const [formData, setFormData] = React.useReducer<any>(formReducer, initial)
+    const [formData, setFormData] = React.useReducer(formReducer, initial)
 
     const [activeStep, setActiveStep] = React.useState<number>(0);
-
-    const fullScreen = useMediaQuery('xl');
-
 
     const currentPage = () => {
         const props: DialogPageProps = {formData: formData, setFormData: setFormData, swiftPage: handleSwiftPage};
@@ -266,8 +316,10 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
     const handleCreateWork = () => {
         console.log('Creation in process...')
         const result = SerializeUI(props.repo);
-        console.log(result);
-        // TODO: Creation process
+        formData.Tasks = result.map((res, i) => {return {TaskHashUi: res, TaskIndex: i}})
+        // formData.Time = formData.Time ? formData.Time : -1;
+        // formData.AdditionalTime = formData.AdditionalTime ? formData.AdditionalTime : -1;
+        ConstructorService.createWork(formData)
         props.onClose()
     }
 

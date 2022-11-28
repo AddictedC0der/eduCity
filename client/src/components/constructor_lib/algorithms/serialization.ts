@@ -44,23 +44,29 @@ function _readProperties(properties: Types.IPropertiesLike): string {
     return result;
 }
 
-function _createProperties(descriptor: string): Types.IPropertiesLike {
-    //@ts-ignore
-    let response: Types.IPropertiesLike = {Base: {}, Local: {}};
-    const chunks = descriptor.split('.');
-    for (let i = 0; i < chunks.length; i++) {
-        const [key, value] = chunks[i].split(':');
-        const property = Constants.ShortcutToProperty(key) as string;
-        console.log(property)
-        if (Constants.CodeTable.PropertiesGroups.Base.find(e => e === property.toString())) {
-            //@ts-ignore
-            response.Base[property] = value;
-        } else {
-            //@ts-ignore
-            response.Local[property] = value;
+function _createProperties(descriptor: string): Types.IPropertiesLike | null {
+    try {
+        //@ts-ignore
+        let response: Types.IPropertiesLike = {Base: {}, Local: {}};
+        const chunks = descriptor.split('.');
+        for (let i = 0; i < chunks.length; i++) {
+            const [key, value] = chunks[i].split(':');
+            const property = Constants.ShortcutToProperty(key) as string;
+            console.log(property)
+            if (Constants.CodeTable.PropertiesGroups.Base.find(e => e === property.toString())) {
+                //@ts-ignore
+                response.Base[property] = value;
+            } else {
+                //@ts-ignore
+                response.Local[property] = value;
+            }
         }
+        return response;
+    } catch(e) {
+        console.log(e);
     }
-    return response;
+    return null;
+    
 }
 
 
@@ -74,7 +80,7 @@ export function SerializeUI(repository: Types.RepositoryElement[][]): string[] {
             const T = (Constants.CodeTable.Components as any)[comp];
             const properties = repository[page][e].properties;
             const processedProperties = _readProperties(properties);
-            const chunk = `${T}-${processedProperties}/`;
+            const chunk = `${T}-${processedProperties}$/`;
             currentPage += chunk;
         }
         currentPage = currentPage.slice(0, -1);
@@ -88,15 +94,31 @@ function _createComponent(descriptor: string, repo: any, parent: any) {
     const T = descriptor.split('-')[0];
     const tool = Constants.findToolById(T) as Types.ToolType;
     const properties = _createProperties(descriptor.split('-')[1]);
+    if (!properties) return;
     const component = repo.createComponent(tool, parent, {X: properties.Base.X, Y: properties.Base.Y}, 'U', properties);
 }
 
+
+function _isHashValid(hash: string) {
+    const pattern = /\w{1,}[-](\w{1,}[:].{1,}.){1,}/;
+    const res = hash.match(pattern) ?? '';
+    if (res[0].length === hash.length) return true;
+    throw new Error('Invalid hash');
+}
+
 export function DeserializeUI(hash: string, parent: any): any {
-    const store = React.useMemo(() => createConstructorStore(Constants.initialConstructorState), []);
-    const response = new ComponentsRepository(store)
-    const components = hash.split('/');
-    for (let i = 0; i < components.length; i++) {
-        _createComponent(components[i], response, parent);
+    try {
+        if (!_isHashValid(hash)) return null;
+        const store = React.useMemo(() => createConstructorStore(Constants.initialConstructorState), []);
+        const response = new ComponentsRepository(store)
+        const components = hash.split('/');
+        for (let i = 0; i < components.length; i++) {
+            _createComponent(components[i], response, parent);
+        }
+        return response;
+    } catch(e) {
+        console.log(e);
+        return;
     }
-    return response;
+    
 }

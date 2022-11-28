@@ -18,7 +18,7 @@ export function CoreRouter() {
         <>
         <Routes>
             {!isAuth ?
-                PublicRoutes.map(route => <Route path={route.path} element={<TaskView />} key={route.path} />)
+                PublicRoutes.map(route => <Route path={route.path} element={<route.element />} key={route.path} />)
                 : PrivateRoutes.map(route => <Route path={route.path} element={<route.element />} key={route.path} />)}
         </Routes>
         </>

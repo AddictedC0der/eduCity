@@ -14,6 +14,7 @@ import { Task } from './work/entities/task.entity';
 import { Token } from './auth/entities/token.entity';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { WorkModule } from './work/work.module';
 import { join } from 'path';
 import { ClassModule } from './class/class.module';
 import { ChatMessage } from './class/entities/chat_message.entity';
@@ -34,7 +35,8 @@ import { ChatMessage } from './class/entities/chat_message.entity';
   }),
   UserModule,
   AuthModule,
-  ClassModule
+  ClassModule,
+  WorkModule
 ],
   controllers: [AppController],
   providers: [AppService],

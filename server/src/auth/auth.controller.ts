@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Req, UseGuards, Request, Response, Body, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Get, Req, UseGuards, Request, Response, Res, Body, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { User } from '../user/entities/user.entity';
@@ -12,13 +12,11 @@ export class AuthController {
 
     @ApiOperation({summary: 'Login user'})
     @ApiResponse({status: 201, description: 'User has been successfully logged in.'})
-    @UseGuards(LocalAuthGuard)
+    // @UseGuards(LocalAuthGuard)
     @UsePipes(ValidationPipe)
     @Post('/login')
     async login(@Request() request, @Response({passthrough: true}) response) {
-        console.log('Request got!')
-        console.log(request)
-        const data = await this.authService.login(request.user);
+        const data = await this.authService.login(request.body);
         response.cookie('refreshToken', data.tokens.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true});
         return data;
     }
@@ -37,18 +35,18 @@ export class AuthController {
     @ApiResponse({status: 201, description: 'User has been successfully logged out.'})
     @UsePipes(ValidationPipe)
     @Post('/logout')
-    async logout(@Request() request, @Response({passthrough: true}) response) {
+    async logout(@Request() request, @Res({passthrough: true}) response) {
         const { refreshToken } = request.cookies;
         const data = await this.authService.logout(refreshToken);
-        response.clearCookies('refreshToken');
+        response.clearCookie('refreshToken');
         return data;
     }
 
-    @ApiOperation({summary: 'Refresh users token'})
+    @ApiOperation({summary: 'Refresh users token.'})
     @ApiResponse({status: 200, description: 'Users token has been successfully refreshed.'})
     @UsePipes(ValidationPipe)
     @Get('/refresh')
-    async refresh(@Request() request, @Response({passthrough: true}) response) {
+    async refresh(@Request() request, @Res({passthrough: true}) response) {
         const { refreshToken } = request.cookies;
         const data = await this.authService.refresh(refreshToken);
         response.cookie('refreshToken', data.tokens.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true});

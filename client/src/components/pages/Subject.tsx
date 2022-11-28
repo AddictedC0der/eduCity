@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { UserAgreementDialog } from '../dialogs/UserAgreement';
 import { MainLayout } from '../layouts/MainLayout';
 import { RoutesEnum } from '../../router';
+import { ConstructorService } from '../../http/constructorAPI';
 
 
 interface TabProps {
@@ -60,6 +61,19 @@ function TasksTab(props: TabProps) {
     const { value, index } = props;
 
     const [open, setOpen] = React.useState(false);
+    const [list, setList] = React.useState([]);
+    
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const data = await ConstructorService.getAllWorks();
+            console.log(data.data)
+            // setList(data.data)
+        }
+
+        fetchData()
+    }, [])
+
+    
 
     const navigate = useNavigate()
 
@@ -75,7 +89,7 @@ function TasksTab(props: TabProps) {
         {field: 'class', headerName: 'Класс', flex: 0.2},
         {field: 'difficulty', headerName: 'Сложность', flex: 0.2},
     ]
-    
+
     const rows: GridRowsProp = [
         {id: 1, index: '1', name: 'Demo1', author: 'Me', class: '8', difficulty: '4'},
         {id: 2, index: '2', name: 'Demo2', author: 'Me', class: '2', difficulty: '2'},

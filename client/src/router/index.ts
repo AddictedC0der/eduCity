@@ -8,6 +8,7 @@ import { MyClassPage } from '../components/pages/MyClass';
 import { TaskConstructor } from '../components/constructor_lib/TaskConstructor';
 import { Subject } from '../components/pages/Subject';
 import { Resources } from "../components/pages/Resources";
+import { UserAccount } from "../components/pages/UserAccount";
 import subjects from '../Assets/subjects.json';
 
 
@@ -26,7 +27,8 @@ export enum RoutesEnum {
     RESOURCES='/resources',
 
     LOGIN='/login',
-    REGISTER='/register'
+    REGISTER='/register',
+    ACCOUNT='/account'
 }
 
 export const PublicRoutes: IRoute[] = [
@@ -39,7 +41,8 @@ export let PrivateRoutes: IRoute[] = [
     {path: RoutesEnum.SUBJECTS, element: Subjects},
     {path: RoutesEnum.CLASS, element: MyClassPage},
     {path: RoutesEnum.TASK_CONSTRUCTOR, element: TaskConstructor},
-    {path: RoutesEnum.RESOURCES, element: Resources}
+    {path: RoutesEnum.RESOURCES, element: Resources},
+    {path: RoutesEnum.ACCOUNT, element: UserAccount}
 ]
 
 PrivateRoutes = PrivateRoutes.concat(subjects.Groups.reduce((res: IRoute[], group) => 

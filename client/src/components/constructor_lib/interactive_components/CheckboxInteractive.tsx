@@ -81,15 +81,13 @@ export class CheckboxInteractive extends React.Component<any, Types.IPropertiesL
     onSelect: () => void
     onDeselect: () => void
     parent: any
-    position: {X: number, Y: number}
+    properties: any
 
     constructor(props: any) {
         super(props);
-        this.position = props.pos;
-        this.state = {
-            Base: {...CheckboxInteractivePropertiesInitial.Base, X: this.position.X, Y: this.position.Y},
-            Local: {...CheckboxInteractivePropertiesInitial.Local}
-        };
+
+        this.properties = props.properties
+        this.state = {...this.properties}
 
         this.onSelect = props.onSelect;
         this.onDeselect = props.onDeselect;

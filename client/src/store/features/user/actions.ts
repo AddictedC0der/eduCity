@@ -50,7 +50,8 @@ export const UserActionCreator = {
         dispatch(UserActionCreator.SetLoadingAction(true));
 
         const data = await AuthService.logout();
-        localStorage.remove('token');
+        console.log(data)
+        localStorage.removeItem('token');
         dispatch(UserActionCreator.SetUserAction({} as IUser));
         dispatch(UserActionCreator.SetAuthAction(false));
 

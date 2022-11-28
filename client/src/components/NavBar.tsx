@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { List, ListItemButton, ListItemText, Box, Avatar, Grid, Typography } from '@mui/material';
+import { List, ListItemButton, ListItemText, Box, Avatar, Grid, Typography, Button } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Footer } from './Footer';
+import { useTypedSelector } from '../hooks/useTypedSelector';
+
 
 // #5CDB95 - main
 // #05386B - Interaction and contrast
@@ -25,15 +27,21 @@ function Navigation() {
 
 
 function UserSection() {
+    const { user } = useTypedSelector(state => state.user);
+
+    const navigate = useNavigate();
+
     return (
-        <Grid container direction='column' alignItems='center' width='30%' aria-label='UserSectionMainGrid'>
-            <Grid item xs={4} aria-label='UserAvatarGrid'>
-                <Avatar></Avatar>
+        <Button onClick={() => navigate('/account')}>
+            <Grid container direction='column' alignItems='center' width='100%' aria-label='UserSectionMainGrid'>
+                <Grid item xs={4} aria-label='UserAvatarGrid'>
+                    <Avatar></Avatar>
+                </Grid>
+                <Grid item xs={8} aria-label='UserNameGrid'>
+                    <Typography variant='h6'>{user.UserLogin}</Typography>
+                </Grid>
             </Grid>
-            <Grid item xs={8} aria-label='UserNameGrid'>
-                <Typography variant='h6'>Username</Typography>
-            </Grid>
-        </Grid>
+        </Button>
     )
 }
 
