@@ -1,12 +1,13 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { IUser } from '../../../models/user.model';
+import { IUserState } from '../../../models/user.model';
 import * as types from './types';
 import { UserActionCreator } from "./actions";
 
 
-const initialState: types.IUserState = {
+const initialState: types.UserState = {
     isAuth: false,
-    user: {} as IUser,
+    //@ts-ignore
+    user: {} as IUserState,
     isLoading: false,
     error: ''
 }

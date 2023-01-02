@@ -60,15 +60,19 @@ export class UserService {
     }
 
     async getUserById(userId: number): Promise<User> {
+        const md = await this.UserRepo.metadata
+        console.log(md)
         const response = await this.UserRepo.findOne({
             where: {id: userId},
+            relations: ['UserStats']
         })
         return response;
     }
 
     async getUserByName(userName: string): Promise<User[]> {
         const response = await this.UserRepo.find({
-            where: {UserLogin: userName}
+            where: {UserLogin: userName},
+            relations: ['UserStats']
         })
         return response;
     }

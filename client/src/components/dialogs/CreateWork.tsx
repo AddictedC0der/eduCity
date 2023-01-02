@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Autocomplete, useMediaQuery,
-    Checkbox, TextField, FormControlLabel, Button, Stepper, Step, StepLabel, Typography, Grid, Slider } from '@mui/material';
+    Checkbox, TextField, FormControlLabel, Button, Stepper, Step, StepLabel, Typography, Grid, Slider, Tooltip } from '@mui/material';
 import subjects from '../../Assets/subjects.json';
-import { TooltipWrapper } from '../complex/Tooltip';
 import { StaticTimePicker } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -13,6 +12,9 @@ import * as Types from '../constructor_lib/types';
 import { ConstructorService } from '../../http/constructorAPI';
 import { IWork, ITask } from '../../models/constructor.model';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
+import { TimePicker } from '../complex/TimePicker';
+import { TooltipWrapper } from '../complex/Tooltip';
+
 
 /*
     Main page: name, section, amount of tasks, use advanced checking system
@@ -31,10 +33,14 @@ interface DialogPageProps {
 function DialogConclusionPage(props: DialogPageProps) {
     const { formData, setFormData } = props;
 
-    const renderTime = (time: Dayjs | null) => {
-        if (time) {
-            const t = time.toDate()
-            return `${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`
+    const renderTime = (time: number | null) => {
+        if (time != null) {
+            console.log(time)
+            let hours = Math.floor(time / 3600000)
+            let minutes = Math.floor((time - hours*3600000) / 6000)
+            let seconds = time - hours*3600000 - minutes*6000
+            console.log(hours, minutes, seconds)
+            return `${hours}:${minutes}:${seconds}`
         }
         return 'Безлимитно'
     }
@@ -42,13 +48,13 @@ function DialogConclusionPage(props: DialogPageProps) {
     return (
         <div style={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%'}}>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', height: '90%'}}>
-                <Typography variant='h5'>{formData.name}</Typography>
-                <Typography>{formData.category}</Typography>
+                <Typography variant='h5'>{formData.Name}</Typography>
+                <Typography>{formData.Category}</Typography>
                 <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', marginTop: '5%'}}>
-                    <FormControlLabel sx={{columnGap: '5%'}} control={<Typography>{renderTime(formData.timeLimit)}</Typography>} label='Время: ' labelPlacement='start' />
-                    <FormControlLabel sx={{columnGap: '5%'}} control={<Typography>{renderTime(formData.additionalTime)}</Typography>} label='Добавочное время: ' labelPlacement='start' />
-                    <FormControlLabel control={<Checkbox disabled checked={formData.advanceChecking} />} label='Продвинутая проверка: ' labelPlacement='start' />
-                    <FormControlLabel sx={{columnGap: '5%'}} control={<Typography>{formData.privacy}</Typography>} label='Доступно для: ' labelPlacement='start' />
+                    <FormControlLabel sx={{columnGap: '5%'}} control={<Typography>{renderTime(formData.Time)}</Typography>} label='Время: ' labelPlacement='start' />
+                    <FormControlLabel sx={{columnGap: '5%'}} control={<Typography>{renderTime(formData.AdditionalTime)}</Typography>} label='Добавочное время: ' labelPlacement='start' />
+                    <FormControlLabel control={<Checkbox disabled checked={formData.AdvancedChecking} />} label='Продвинутая проверка: ' labelPlacement='start' />
+                    <FormControlLabel sx={{columnGap: '5%'}} control={<Typography>{formData.Privacy}</Typography>} label='Доступно для: ' labelPlacement='start' />
                 </div>
             </div>
         </div>
@@ -87,20 +93,15 @@ function DialogPrivacyPage(props: DialogPageProps) {
 function DialogTimePage(props: DialogPageProps) {
     const { formData, setFormData } = props;
 
-    const [date, setDate] = React.useState<Dayjs | null>(dayjs('2022-04-07T10:15'));
-
-    React.useEffect(() => {
-        const t = date?.toDate()
-        console.log(t!.getSeconds() + t!.getMinutes()*60 + t!.getHours()*60*60);
-    }, [date])
-
     const handleLimitActivation = (event: any) => {
         if (!event.target.checked) {
-            setFormData({type: 'setTime', payload: dayjs('00:00:00', 'hh:mm:ss').toString()});
-            setFormData({type: 'setAddTime', payload: dayjs('00:00:00', 'hh:mm:ss').toString()});
+            console.log('Closing')
+            setFormData({type: 'setTime', payload: null});
+            setFormData({type: 'setAddTime', payload: null});
         } else {
-            setFormData({type: 'setTime', payload: dayjs('00:30:00', 'hh:mm:ss').toString()});
-            setFormData({type: 'setAddTime', payload: dayjs('00:00:00', 'hh:mm:ss').toString()});
+            console.log('Opening')
+            setFormData({type: 'setTime', payload: 0});
+            setFormData({type: 'setAddTime', payload: 0});
         }
     }
 
@@ -109,23 +110,21 @@ function DialogTimePage(props: DialogPageProps) {
         
         <div style={{height: '90%', width: '100%', display: 'flex', flexDirection: 'column', rowGap: '5%'}}>
             
-            <FormControlLabel sx={{columnGap: '1%'}} control={
-                <Checkbox checked={formData.Time !== dayjs('00:00:00', 'hh:mm:ss').toString() ? true : false} onChange={handleLimitActivation} sx={{width: '100%'}} />}
+            <FormControlLabel sx={{columnGap: '1%', width: '100%', display: 'flex', justifyContent: 'start'}} control={
+                <Checkbox checked={formData.Time != null ? true : false} onChange={handleLimitActivation}  />}
                 label='Время ограничено' labelPlacement='start' />
-            {formData.Time ?
-            (<div style={{rowGap: '5%'}}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-            
-                <StaticTimePicker showToolbar={true} toolbarTitle='Время работы'
-                                views={['hours', 'minutes', 'seconds']} ampm={false} orientation="landscape"
-                                value={formData.Time} onChange={(newDate) => setFormData({type: 'setTime', payload: newDate})}
-                                renderInput={(params) => <TextField {...params} />} />
-                <StaticTimePicker showToolbar={true} toolbarTitle='Добавочное время'
-                                views={['hours', 'minutes', 'seconds']} ampm={false} orientation="landscape"
-                                value={formData.AdditionalTime} onChange={(newDate) => setFormData({type: 'setAddTime', payload: newDate})}
-                                renderInput={(params) => <TextField {...params} />} />
-            </LocalizationProvider>
-                    
+            {formData.Time != null ?
+            (<div style={{width: '50%', height: '50%', rowGap: '5%'}}>
+                <TimePicker label='Время на выполнение'
+                            paperProps={{width: '100%'}}
+                            value={formData.Time}
+                            onChange={(newTime: number) => {console.log(newTime); setFormData({type: 'setTime', payload: newTime})}} />
+                <div id='spacer' style={{height: '10%'}}></div>
+                <TooltipWrapper title='Время, которое будет добавляться к основному после выполнения задания' placement='right' mergeWithIcon={true}>
+                    <TimePicker label='Добавочное время'
+                                value={formData.AdditionalTime}
+                                onChange={(newTime: number) => setFormData({type: 'setTime', payload: newTime})} />
+                </TooltipWrapper>
             </div>)
             : null
             }
@@ -234,17 +233,17 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
     const steps = ['Общие настройки', 'Насткройки времени', 'Настройки доступа'];
 
     const { user } = useTypedSelector(state => state.user);
-
+    console.log(user.user.id)
     const initial: IWork = {
         Name: 'Делимость чисел',
-        Author: user.id,
+        Author: user.user.id,
         Category: 'Математика',
         Difficulty: 3,
         Class: 9,
         AutoChecking: false,
         AdvancedChecking: false,
-        Time: dayjs('00:00:00', 'hh:mm:ss').toString(),
-        AdditionalTime: dayjs('00:00:00', 'hh:mm:ss').toString(),
+        Time: 0,
+        AdditionalTime: 0,
         Privacy: 'ME',
         Tasks: []
     }
@@ -270,7 +269,7 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
                 return {...state, AdvancedChecking: action.payload};
             }
             case 'setTime': {
-                return {...state, TimeLimit: action.payload};
+                return {...state, Time: action.payload};
             }
             case 'setAddTime': {
                 return {...state, AdditionalTime: action.payload};

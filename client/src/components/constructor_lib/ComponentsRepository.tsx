@@ -101,6 +101,7 @@ export class ComponentsRepository {
         if (this.repository[this._store.getState().currentPage - 1]) {
             return this.repository[this._store.getState().currentPage - 1].map(comp => {
                 if (comp.componentRef.current) {
+                    console.log(comp)
                     comp.componentRef.current.handlePropertyChange(comp.properties);
                 }
                 

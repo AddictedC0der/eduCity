@@ -7,7 +7,7 @@ export class ChatService {
     static async createMessage(message: IChatMessage): Promise<AxiosResponse> {
         console.log('Sending')
         console.log(message)
-        return $api.post('/chat/create', message);
+        return $api.post('/chat/create', {...message, author: message.author.id});
     }
     static async editMessage(messageId: number, newValue: string): Promise<AxiosResponse> {
         const response = $api.put(`/chat/${messageId}`, {newValue});

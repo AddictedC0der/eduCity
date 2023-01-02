@@ -9,8 +9,8 @@ export interface IWork {
     Category: string;
     AutoChecking: boolean;
     AdvancedChecking: boolean;
-    Time: string | null;
-    AdditionalTime: string | null;
+    Time: number | null;
+    AdditionalTime: number | null;
     Privacy: string;
     Difficulty: number;
     Class: number;

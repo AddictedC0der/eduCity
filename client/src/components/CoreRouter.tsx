@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { Navigate, Route, Routes, useNavigate, useLocation } from 'react-router-dom'
 import { useTypedSelector } from '../hooks/useTypedSelector';
 import { PublicRoutes, PrivateRoutes, RoutesEnum } from '../router';
 import { TaskConstructor } from './constructor_lib/TaskConstructor'
+import { ErrorPage } from './pages/Error';
 import { TaskView } from './pages/TaskView';
 
 

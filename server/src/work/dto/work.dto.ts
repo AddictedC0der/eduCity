@@ -34,13 +34,13 @@ export class CreateWorkDto {
     @IsBoolean({message: 'AdvancedChecking must be boolean.'})
     readonly AdvancedChecking: boolean;
 
-    @ApiProperty({example: '<DAYJS_DATE_STRING>', description: 'Time for work completion (DayJS date string).'})
-    @IsString()
-    readonly Time: string;
+    @ApiProperty({example: '1000', description: 'Time for work completion (in ticks).'})
+    @IsNumber()
+    readonly Time: number;
 
-    @ApiProperty({example: '<DAYJS_DATE_STRING>', description: 'Time adding to total after task completion (DayJS date string).'})
-    @IsString()
-    readonly AdditionalTime: string;
+    @ApiProperty({example: '2000', description: 'Time adding to total after task completion (in ticks).'})
+    @IsNumber()
+    readonly AdditionalTime: number;
 
     @ApiProperty({example: 'Public', description: 'Defines who can see and complete work.'})
     @IsString({message: 'WorkPolicy must be string.'})
@@ -70,13 +70,13 @@ export class UpdateWorkDto {
     @IsBoolean({message: 'AdvancedChecking must be boolean.'})
     readonly AdvancedChecking: boolean;
 
-    @ApiProperty({example: '<DAYJS_DATE_STRING>', description: 'Time for work completion (DayJS date string).'})
-    @IsString()
-    readonly Time: string;
+    @ApiProperty({example: '1000', description: 'Time for work completion (in ticks).'})
+    @IsNumber()
+    readonly Time: number;
 
-    @ApiProperty({example: '<DAYJS_DATE_STRING>', description: 'Time adding to total after task completion (DayJS date string).'})
-    @IsString()
-    readonly AdditionalTime: string;
+    @ApiProperty({example: '2000', description: 'Time adding to total after task completion (in ticks).'})
+    @IsNumber()
+    readonly AdditionalTime: number;
 
     @ApiProperty({example: 'Public', description: 'Defines who can see and complete work.'})
     @IsString({message: 'WorkPolicy nust be string.'})

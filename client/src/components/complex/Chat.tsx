@@ -94,10 +94,10 @@ export function Chat() {
             mozBoxShadow: '1px 1px 8px 9px rgba(34, 60, 80, 0.2)',
             boxShadow: '1px 1px 8px 9px rgba(34, 60, 80, 0.2)', height: '100%'}}>
             <List>
-                {msgs.map(msg => ChatMessage({message: msg, userId: user.id}))}
+                {msgs.map(msg => ChatMessage({message: msg, userId: user.user.id}))}
             </List>
             <div style={{padding: '1%', alignSelf: 'self-end'}}>
-                <ChatInputBox onSend={addMsg} user={user} />
+                <ChatInputBox onSend={addMsg} user={user.user} />
             </div>
             
         </Paper>

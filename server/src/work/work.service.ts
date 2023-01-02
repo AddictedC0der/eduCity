@@ -1,25 +1,44 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
-import { DeleteResult, InsertResult, Repository, UpdateResult } from "typeorm";
+import { DeepPartial, DeleteResult, InsertResult, Repository, UpdateResult } from "typeorm";
 import { Work } from './entities/work.entity';
 import { Task } from './entities/task.entity';
 import { CreateWorkDto, UpdateWorkDto } from "./dto/work.dto";
 import { CreateTaskDto } from "./dto/task.dto";
 import { DataSource } from "typeorm";
 import { Subject } from "../user/entities/subject.entity";
-import { User } from "src/user/entities/user.entity";
+import { User } from "../user/entities/user.entity";
 
 
 @Injectable()
 export class TaskService {
-    constructor(@InjectRepository(Task) private TaskRepo: Repository<Task>) {}
+    constructor(@InjectRepository(Task) private TaskRepo: Repository<Task>,
+    @InjectRepository(Work) private WorkRepo: Repository<Work>) {}
 
     async createTask(taskDto: CreateTaskDto) {
-        const response = this.TaskRepo.create({...taskDto});
+        const parentWork = await this.WorkRepo.findOne({
+            where: {id: taskDto.ParentWork}
+        });
+        const response = this.TaskRepo.create({...taskDto, ParentWork: parentWork});
         await this.TaskRepo.save(response);
         return response;
     }
+
+    async findTaskById(taskId: number) {
+        const response = await this.TaskRepo.findOne({
+            where: {id: taskId}
+        });
+        return response;
+    }
+
+    async findAllWorksTasks(parentWork: DeepPartial<Work>) {
+        const response = await this.TaskRepo.find({
+            where: {ParentWork: parentWork}
+        });
+        return response;
+    }
 }
+
 
 @Injectable()
 export class WorkService {
@@ -30,12 +49,8 @@ export class WorkService {
 
     async createWork(workDto: CreateWorkDto): Promise<Work> {
         const createTasks = async (tasks: any[], parentId: number) => {
-            const parentWork = await this.WorkRepo.findOne({
-                where: {id: parentId}
-            });
             for (let i = 0; i < tasks.length; i++) {
-                const formed = {...tasks[i], ParentWork: parentWork}
-                await this.TaskService.createTask(formed);
+                await this.TaskService.createTask(tasks[i]);
             }
         }
         
@@ -45,7 +60,7 @@ export class WorkService {
 
         const user = await this.UserRepo.findOne({
             where: {id: workDto.Author}
-        })
+        });
 
         const formed = {...workDto, Category: sbj, Author: user}
         delete formed.Tasks;
@@ -69,22 +84,26 @@ export class WorkService {
         return response;
     }
 
-    async getWorkById(id: number): Promise<Work> {
-        const response = await this.WorkRepo.findOne({
-            where: {id: id}
-        })
+    async getWorkById(workId: number): Promise<{work: DeepPartial<Work>, tasks: DeepPartial<Task>[]}> {
+        let response: {work: any, tasks: any} = {work: {}, tasks: {}};
+        response.work = await this.WorkRepo.findOne({
+            where: {id: workId},
+            relations: ['Category']
+        });
+        response.tasks = await this.TaskService.findAllWorksTasks(response.work);
         return response;
     }
 
     async getWorkByName(name: string): Promise<Work> {
         const response = await this.WorkRepo.findOne({
-            where: {Name: name}
+            where: {Name: name},
+            relations: ['Category']
         });
         return response;
     }
 
     async getAll(): Promise<Work[]> {
-        const response = await this.WorkRepo.find();
+        const response = await this.WorkRepo.find({relations: ['Category']});
         return response;
     }
 }

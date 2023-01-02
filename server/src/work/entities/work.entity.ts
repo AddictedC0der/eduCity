@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinTable, JoinColumn } from 'typeorm';
 import { Subject } from '../../user/entities/subject.entity';
 import { Teacher, User } from '../../user/entities/user.entity';
 import { Task } from './task.entity';
@@ -9,7 +9,7 @@ export class Work {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Subject, (subject) => subject.Works)
+    @ManyToOne(() => Subject, subject => subject.Works)
     Category: Subject;
 
     @Column()
@@ -31,14 +31,15 @@ export class Work {
     AdvancedChecking: boolean;
 
     @Column()
-    Time: string;
+    Time: number;
 
     @Column()
-    AdditionalTime: string;
+    AdditionalTime: number;
 
     @Column()
     Privacy: string;
 
-    @OneToMany(() => Task, (task) => task.ParentWork)
-    Tasks: Task[]
+    // @OneToMany(() => Task, task => task.ParentWork)
+    // @JoinColumn()
+    // Tasks: Task[]
 }

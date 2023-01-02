@@ -5,7 +5,7 @@ import { School } from './entities/school.entity';
 import { ChatMessage } from './entities/chat_message.entity';
 import { ChatController } from './class.controller';
 import { ChatService } from './class.service';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 
 
 @Module({

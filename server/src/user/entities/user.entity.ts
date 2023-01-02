@@ -3,7 +3,7 @@ import { Class } from '../../class/entities/class.entity';
 import { Subject } from './subject.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable, JoinColumn, OneToOne, BaseEntity, OneToMany, TableInheritance, ChildEntity } from 'typeorm';
 import { Token } from '../../auth/entities/token.entity';
-import { Work } from 'src/work/entities/work.entity';
+import { Work } from '../../work/entities/work.entity';
 
 @Entity()
 @TableInheritance({column: {type: 'varchar', name: 'Role'}})
@@ -23,6 +23,9 @@ export class User {
     @OneToOne(() => Token, token => token.UserId, {nullable: true, onDelete: 'SET NULL'})
     @JoinColumn()
     Token: Token;
+
+    @Column()
+    Role: string;
 }
 
 
@@ -63,5 +66,4 @@ export class Student extends User {
     @ManyToOne(() => Parent, parent => parent.Children, {onDelete: 'SET NULL', nullable: true})
     Parent: Parent;
 }
-
 

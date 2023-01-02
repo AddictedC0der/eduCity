@@ -17,15 +17,15 @@ export function UserAccount() {
                         <Paper sx={{backgroundColor: 'blue', width: '100%', height: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center'}}>
                             <Box sx={{height: '100%', display: 'flex', direction: 'column', alignItems: 'center'}}>
                                 <Avatar sx={{width: 200, height: 200}}></Avatar>
-                                <Typography>Role {user.UserRole}</Typography>
+                                <Typography>Role {user.user.UserRole}</Typography>
                             </Box>
                             
                             <Box sx={{height: '90%'}}>
                                 <Typography>Общие настройки</Typography>
                                 <div>
-                                    <Typography>Имя: {user.UserLogin}</Typography>
+                                    <Typography>Имя: {user.user.UserLogin}</Typography>
                                     <FormControlLabel control={<Button>Изменить</Button>} label='Пароль:' labelPlacement='start' />
-                                    <Typography>Почта: {user.UserEmail}</Typography>
+                                    <Typography>Почта: {user.user.UserEmail}</Typography>
                                     <div style={{display: 'flex', justifyContent: 'space-evenly'}}>
                                         <Button variant='contained'>Изменить</Button>
                                         <Button variant='contained' sx={{backgroundColor: 'red'}} onClick={() => logout()}>Выйти</Button>

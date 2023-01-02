@@ -18,6 +18,8 @@ import { WorkModule } from './work/work.module';
 import { join } from 'path';
 import { ClassModule } from './class/class.module';
 import { ChatMessage } from './class/entities/chat_message.entity';
+import { myMigration1670034134209 } from './migrations/1670034134209-myMigration';
+import { CustomLogger } from './logging/CustomLogger';
 
 
 @Module({
@@ -32,6 +34,11 @@ import { ChatMessage } from './class/entities/chat_message.entity';
       database: process.env.DATABASE_NAME,
       entities: [User, Teacher, Student, Parent, Class, School, Stats, Subject, Work, Task, Token, ChatMessage],
       synchronize: true,
+      migrationsTableName: "migrations",
+      // migrations: [myMigration1670034134209],
+      // migrationsRun: true,
+      logging: 'all',
+      // logger: new CustomLogger()
   }),
   UserModule,
   AuthModule,
@@ -40,6 +47,7 @@ import { ChatMessage } from './class/entities/chat_message.entity';
 ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [TypeOrmModule]
 })
 export class AppModule {}
 

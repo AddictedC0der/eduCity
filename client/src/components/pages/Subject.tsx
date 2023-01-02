@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { Typography, Box, Tabs, Tab, Stack, Paper, Accordion, AccordionSummary, AccordionDetails, Button } from '@mui/material';
-import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridEventListener, GridRowsProp } from '@mui/x-data-grid';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { UserAgreementDialog } from '../dialogs/UserAgreement';
 import { MainLayout } from '../layouts/MainLayout';
 import { RoutesEnum } from '../../router';
 import { ConstructorService } from '../../http/constructorAPI';
+import { TimePicker } from '../complex/TimePicker';
 
 
 interface TabProps {
@@ -18,7 +19,9 @@ interface TabProps {
 function CoursesTab(props: TabProps) {
     const { value, index } = props;
 
-    const [expanded, setExpanded] = React.useState<string | false>(false)
+    const navigate = useNavigate();
+
+    const [expanded, setExpanded] = React.useState<string | false>(false);
 
     const handleChangeExpanded = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
         setExpanded(isExpanded ? panel : false);
@@ -31,7 +34,7 @@ function CoursesTab(props: TabProps) {
         <>
         {value === index && (
             <Box sx={{width: '100%', paddingTop: '2%'}}>
-                <Button variant='contained'>Добавить курс</Button>
+                <Button variant='contained' onClick={() => navigate(RoutesEnum.THEORY_CONSTRUCTOR)}>Добавить курс</Button>
                 <Stack>
                     {classes.map(cls =>
                         <Accordion expanded={expanded === `panel-${cls}`}
@@ -67,7 +70,7 @@ function TasksTab(props: TabProps) {
         const fetchData = async () => {
             const data = await ConstructorService.getAllWorks();
             console.log(data.data)
-            // setList(data.data)
+            setList(data.data)
         }
 
         fetchData()
@@ -90,20 +93,30 @@ function TasksTab(props: TabProps) {
         {field: 'difficulty', headerName: 'Сложность', flex: 0.2},
     ]
 
-    const rows: GridRowsProp = [
-        {id: 1, index: '1', name: 'Demo1', author: 'Me', class: '8', difficulty: '4'},
-        {id: 2, index: '2', name: 'Demo2', author: 'Me', class: '2', difficulty: '2'},
-        {id: 3, index: '3', name: 'Demo3', author: 'Me', class: '10', difficulty: '9'},
-        {id: 4, index: '4', name: 'Demo4', author: 'Me', class: '4', difficulty: '10'},
-        {id: 5, index: '5', name: 'Demo5', author: 'Me', class: '6', difficulty: '1'},
-    ]
+    //@ts-ignore
+    const rows: GridRowsProp = list.map(e => {return {id: e.id, index: e.id, name: e.Name, author: 'Me', class: e.Class, difficulty: e.Difficulty}})
+
+    // const rows: GridRowsProp = [
+    //     {id: 1, index: '1', name: 'Demo1', author: 'Me', class: '8', difficulty: '4'},
+    //     {id: 2, index: '2', name: 'Demo2', author: 'Me', class: '2', difficulty: '2'},
+    //     {id: 3, index: '3', name: 'Demo3', author: 'Me', class: '10', difficulty: '9'},
+    //     {id: 4, index: '4', name: 'Demo4', author: 'Me', class: '4', difficulty: '10'},
+    //     {id: 5, index: '5', name: 'Demo5', author: 'Me', class: '6', difficulty: '1'},
+    // ]
+
+    const handleClick: GridEventListener<'rowClick'> = (params, event, details) => {
+        console.log(params)
+        console.log(event)
+        console.log(details)
+        navigate(`${RoutesEnum.TASK_VIEW}?id=${params.id}`)
+    }
 
     return (
         <>
         {value === index && (
             <Box sx={{width: '100%', height: '100%'}}>
                 <Button variant='contained' sx={{marginTop: '2%'}} onClick={e => setOpen(true)}>Добавить задание</Button>
-                <DataGrid rows={rows} columns={columns} sx={{marginTop: '2%', height: '100%'}} />
+                <DataGrid onRowClick={handleClick} rows={rows} columns={columns} sx={{marginTop: '2%', height: '100%'}} />
                 <UserAgreementDialog open={open} onClose={handleDialogClose} />
             </Box>
         )}
@@ -133,5 +146,6 @@ export function Subject() {
                 <TasksTab value={tab} index={1} />
             </Box>
         </MainLayout>
+        
     )
 }

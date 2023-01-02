@@ -17,7 +17,6 @@ export class TokenService {
                 @InjectRepository(User) private UserRepo: Repository<User>) {}
     
     async createToken(user: User): Promise<any> {
-        console.log(typeof user)
         const payload = {login: user.UserLogin, sub: user.id}
         const accessToken = this.jwtService.sign(payload, {expiresIn: '30m'})
         const refreshToken = this.jwtService.sign(payload, {expiresIn: '30d'})
@@ -65,6 +64,7 @@ export class AuthService {
     
     async validateUser(login: string, password: string) {
         const user = (await this.userService.getUserByName(login))[0];
+        console.log(user)
         if (user && await bcrypt.compare(password, user.UserPassword)) {
             return user;
         }
@@ -72,6 +72,7 @@ export class AuthService {
     }
 
     async login(user: any): Promise<any> {
+        console.log('Logging...')
         const validated_user = await this.validateUser(user.login, user.password);
         const tokens = await this.tokenService.createToken(validated_user);
         await this.tokenService.setToken(validated_user.id, tokens.refreshToken);

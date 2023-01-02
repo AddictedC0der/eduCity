@@ -1,9 +1,9 @@
-import { IUser } from "../../../models/user.model";
+import { IUserState } from "../../../models/user.model";
 
 
-export interface IUserState {
+export interface UserState {
     isAuth: boolean;
-    user: IUser;
+    user: IUserState;
     isLoading: boolean;
     error: string;
 }
@@ -22,7 +22,7 @@ export interface ISetAuthAction {
 
 export interface ISetUserAction {
     action: UserActionEnum.SET_USER;
-    payload: IUser;
+    payload: IUserState;
 }
 
 export interface ISetLoadingAction {

@@ -38,7 +38,7 @@ function UserSection() {
                     <Avatar></Avatar>
                 </Grid>
                 <Grid item xs={8} aria-label='UserNameGrid'>
-                    <Typography variant='h6'>{user.UserLogin}</Typography>
+                    <Typography variant='h6'>{user.user.UserLogin}</Typography>
                 </Grid>
             </Grid>
         </Button>
