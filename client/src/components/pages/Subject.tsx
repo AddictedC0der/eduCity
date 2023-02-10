@@ -7,6 +7,7 @@ import { UserAgreementDialog } from '../dialogs/UserAgreement';
 import { MainLayout } from '../layouts/MainLayout';
 import { RoutesEnum } from '../../router';
 import { ConstructorService } from '../../http/constructorAPI';
+import { SubjectService } from '../../http/subjectsAPI';
 import { TimePicker } from '../complex/TimePicker';
 
 
@@ -65,10 +66,11 @@ function TasksTab(props: TabProps) {
 
     const [open, setOpen] = React.useState(false);
     const [list, setList] = React.useState([]);
-    
+    const location = useLocation()
+
     React.useEffect(() => {
         const fetchData = async () => {
-            const data = await ConstructorService.getAllWorks();
+            const data = await SubjectService.getSubjectWorks((location.state as {subject: string}).subject);
             console.log(data.data)
             setList(data.data)
         }
@@ -77,7 +79,6 @@ function TasksTab(props: TabProps) {
     }, [])
 
     
-
     const navigate = useNavigate()
 
     const handleDialogClose = () => {
@@ -133,11 +134,12 @@ export function Subject() {
     }
 
     const location = useLocation()
+    console.log(location)
 
     return (
         <MainLayout paddingMain='ALL'>
             <Box sx={{display: 'flex', flexDirection: 'column', JustifyContent: 'center', alignItems: 'center', width: '100%', minHeight: '100vh'}}>
-                <Typography variant='h3'>Русский язык</Typography>
+                <Typography variant='h3'>{(location.state as {subject: string}).subject}</Typography>
                 <Tabs value={tab} onChange={handleChangeTab} sx={{width: '100%'}}>
                     <Tab label='Курсы' />
                     <Tab label='Задания' />

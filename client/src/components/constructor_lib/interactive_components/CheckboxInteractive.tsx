@@ -64,15 +64,24 @@ export function CheckboxInteractivePropertiesArea() {
 }
 
 
-export function CheckboxInteractiveInner() {
+export function CheckboxInteractiveInner(props: any) {
     const properties = React.useContext(PropertiesContext);
 
     const handleChangeChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
         properties.setProperties({Local: {...properties.Properties.Local, Checked: event.target.checked}})
     }
 
+    const shift = props.way !== 'I' ? {
+        left: properties.Properties.Base.X,
+        top: properties.Properties.Base.Y,
+    } : {}
+
     return (
-        <FormControlLabel control={<Checkbox checked={properties.Properties.Local.Checked} onChange={handleChangeChecked} />} label={properties.Properties.Local.Text} sx={{height: '100%', width: '100%'}} />
+        <FormControlLabel control={<Checkbox checked={properties.Properties.Local.Checked} onChange={handleChangeChecked} />} label={properties.Properties.Local.Text}
+                        sx={{height: props.way === 'I' ? '100%' : properties.Properties.Base.Height, width: props.way === 'I' ? '100%' : properties.Properties.Base.Width,
+                            position: 'absolute',
+                            ...shift
+                        }} />
     )
 }
 
@@ -80,33 +89,40 @@ export function CheckboxInteractiveInner() {
 export class CheckboxInteractive extends React.Component<any, Types.IPropertiesLike> {
     onSelect: () => void
     onDeselect: () => void
+    onPropertyChange: (transferObj: Types.IPropertiesLike) => void;
     parent: any
     properties: any
+    way: 'I' | 'U'
 
     constructor(props: any) {
         super(props);
 
         this.properties = props.properties
         this.state = {...this.properties}
-
+        
+        this.way = props.way;
         this.onSelect = props.onSelect;
         this.onDeselect = props.onDeselect;
+        this.onPropertyChange = props.onPropertyChange;
         this.handlePropertyChange = this.handlePropertyChange.bind(this);
         this.parent = props.parent;
     }
 
     handlePropertyChange(transferObj: Types.IPropertiesLike | Types.IBaseInteractiveProperties) {
         this.setState(transferObj as Types.IPropertiesLike);
+        this.onPropertyChange(transferObj as Types.IPropertiesLike);
     }
 
     render() {
         return (
             <PropertiesContext.Provider value={{Properties: this.state, setProperties: this.handlePropertyChange}}>
+                {this.way === 'I' ? (
                 <BaseInteractive onSelect={this.onSelect} onDeselect={this.onDeselect} parent={this.parent}
                                 propertiesChangeHandler={this.handlePropertyChange} properties={{Base: this.state.Base}}
                                 propertiesArea={CheckboxInteractivePropertiesArea}>
-                    <CheckboxInteractiveInner />
+                    <CheckboxInteractiveInner way={this.way} />
                 </BaseInteractive>
+                ) : <CheckboxInteractiveInner way={this.way} />}
             </PropertiesContext.Provider>
         )
     }

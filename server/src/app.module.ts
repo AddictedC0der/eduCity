@@ -37,7 +37,7 @@ import { CustomLogger } from './logging/CustomLogger';
       migrationsTableName: "migrations",
       // migrations: [myMigration1670034134209],
       // migrationsRun: true,
-      logging: 'all',
+      // logging: 'all',
       // logger: new CustomLogger()
   }),
   UserModule,

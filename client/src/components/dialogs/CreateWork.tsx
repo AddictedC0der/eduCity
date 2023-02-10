@@ -7,7 +7,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { NonNullablePickerChangeHandler } from '@mui/x-date-pickers/internals/hooks/useViews';
-import { SerializeUI } from '../constructor_lib/algorithms/serialization'; 
+import { Serializer } from '../constructor_lib/algorithms/serialization'; 
 import * as Types from '../constructor_lib/types';
 import { ConstructorService } from '../../http/constructorAPI';
 import { IWork, ITask } from '../../models/constructor.model';
@@ -38,7 +38,7 @@ function DialogConclusionPage(props: DialogPageProps) {
             console.log(time)
             let hours = Math.floor(time / 3600000)
             let minutes = Math.floor((time - hours*3600000) / 6000)
-            let seconds = time - hours*3600000 - minutes*6000
+            let seconds = (time - hours*3600000 - minutes*6000) / 1000
             console.log(hours, minutes, seconds)
             return `${hours}:${minutes}:${seconds}`
         }
@@ -123,7 +123,7 @@ function DialogTimePage(props: DialogPageProps) {
                 <TooltipWrapper title='Время, которое будет добавляться к основному после выполнения задания' placement='right' mergeWithIcon={true}>
                     <TimePicker label='Добавочное время'
                                 value={formData.AdditionalTime}
-                                onChange={(newTime: number) => setFormData({type: 'setTime', payload: newTime})} />
+                                onChange={(newTime: number) => setFormData({type: 'setAddTime', payload: newTime})} />
                 </TooltipWrapper>
             </div>)
             : null
@@ -283,6 +283,8 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
         }
     }
 
+    const serializer = new Serializer();
+
     const [formData, setFormData] = React.useReducer(formReducer, initial)
 
     const [activeStep, setActiveStep] = React.useState<number>(0);
@@ -314,8 +316,9 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
 
     const handleCreateWork = () => {
         console.log('Creation in process...')
-        const result = SerializeUI(props.repo);
-        formData.Tasks = result.map((res, i) => {return {TaskHashUi: res, TaskIndex: i}})
+        const result = serializer.serialize(props.repo);
+        formData.Tasks = result.pages.map((res, i) => {return {TaskHashUi: res, TaskIndex: i}})
+        console.log(formData)
         // formData.Time = formData.Time ? formData.Time : -1;
         // formData.AdditionalTime = formData.AdditionalTime ? formData.AdditionalTime : -1;
         ConstructorService.createWork(formData)

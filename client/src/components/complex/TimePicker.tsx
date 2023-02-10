@@ -14,7 +14,7 @@ export function TimePicker(props: TimePickerProps) {
     const parseTime = (time: number) => {
         let parsedHours = Math.floor(time / HOUR);
         let parsedMinutes = Math.floor((time - parsedHours*HOUR) / MINUTE);
-        let parsedSeconds = time - parsedHours*HOUR - parsedMinutes;
+        let parsedSeconds = (time - parsedHours*HOUR - parsedMinutes*MINUTE) / SECOND;
         return [parsedHours, parsedMinutes, parsedSeconds];
     }
 

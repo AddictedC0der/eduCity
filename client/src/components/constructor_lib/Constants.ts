@@ -55,7 +55,7 @@ export const CodeTable = {
         Local: ['BackgroundColor', 'TextColor', 'Text', 'Checked']
     },
     Constructors: {
-        '': IC.TextInteractive,
+        'TxtInt': IC.TextInteractive,
         'BtnInt': IC.ButtonInteractive,
         'CbxInt': IC.CheckboxInteractive
     }   

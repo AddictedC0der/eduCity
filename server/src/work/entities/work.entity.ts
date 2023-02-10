@@ -15,7 +15,7 @@ export class Work {
     @Column()
     Name: string;
 
-    @OneToMany(() => Teacher, teacher => teacher.Works)
+    @ManyToOne(() => Teacher, teacher => teacher.Works)
     Author: Teacher;
 
     @Column()
@@ -39,7 +39,6 @@ export class Work {
     @Column()
     Privacy: string;
 
-    // @OneToMany(() => Task, task => task.ParentWork)
-    // @JoinColumn()
-    // Tasks: Task[]
+    @OneToMany(() => Task, task => task.ParentWork)
+    Tasks: Task[];
 }

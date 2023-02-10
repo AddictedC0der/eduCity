@@ -1,9 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsString, Length, IsArray, IsNumber } from "class-validator";
+import { IsEmail, IsString, Length, IsArray, IsNumber, IsJSON } from "class-validator";
+
+
+export interface TaskHashUiJSON {
+    answer: string;
+    elements: {
+        type: string;
+        properties: any
+    }[]
+}
 
 
 export class CreateTaskDto {
-    @ApiProperty({example: 'Number division.', description: 'ID of the work current task belongs to.'})
+    @ApiProperty({example: '142.', description: 'ID of the work current task belongs to.'})
     @IsNumber()
     readonly ParentWork: number;
 
@@ -11,7 +20,7 @@ export class CreateTaskDto {
     @IsNumber()
     readonly TaskIndex: number;
 
-    @ApiProperty({example: '<HASH_PATTERN>', description: 'UI Hash of the task.'})
-    @IsString({message: 'TaskHashUi must be string.'})
-    readonly TaskHashUi: string;
+    @ApiProperty({example: '<JSON UI TEMPLATE>', description: 'UI Hash of the task.'})
+    @IsJSON({message: 'TaskHashUi must be JSON.'})
+    readonly TaskHashUi: TaskHashUiJSON;
 }

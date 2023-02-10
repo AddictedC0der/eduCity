@@ -4,14 +4,14 @@ import { User, Teacher, Student, Parent } from './entities/user.entity';
 import { Stats } from './entities/stats.entity';
 import { Class } from '../class/entities/class.entity';
 import { Subject } from './entities/subject.entity';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
+import { UserService, SubjectService } from './user.service';
+import { SubjectController, UserController } from './user.controller';
 
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Teacher, Student, Parent, Stats, Subject, Class])],
-  controllers: [UserController],
-  providers: [UserService],
+  controllers: [UserController, SubjectController],
+  providers: [UserService, SubjectService],
   exports: [UserService]
 })
 

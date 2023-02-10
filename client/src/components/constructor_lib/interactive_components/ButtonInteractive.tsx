@@ -65,17 +65,25 @@ export function ButtonInteractivePropertiesArea() {
 }
 
 
-export function ButtonInteractiveInner() {
+export function ButtonInteractiveInner(props: any) {
     const properties = React.useContext(PropertiesContext);
 
-    const handleManualChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        properties.setProperties({Local: {...properties.Properties.Local, Text: event.target.value}})
-        // props.propertiesChangeHandler({Local: {Text: event.target.value}})
-    }
+    // const handleManualChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    //     properties.setProperties({Local: {...properties.Properties.Local, Text: event.target.value}})
+    //     // props.propertiesChangeHandler({Local: {Text: event.target.value}})
+    // }
+
+    const shift = props.way !== 'I' ? {
+        left: properties.Properties.Base.X,
+        top: properties.Properties.Base.Y,
+    } : {}
 
     return (
         <Button variant='contained'
-                sx={{height: '100%', width: '100%', backgroundColor: properties.Properties.Local.BackgroundColor,
+                sx={{height: props.way === 'I' ? '100%' : properties.Properties.Base.Height, width: props.way === 'I' ? '100%' : properties.Properties.Base.Width,
+                position: 'absolute',
+                ...shift,
+                backgroundColor: properties.Properties.Local.BackgroundColor,
                 color: properties.Properties.Local.TextColor}}>
             {properties.Properties.Local.Text}
         </Button>
@@ -88,10 +96,12 @@ export class ButtonInteractive extends React.Component<any, Types.IPropertiesLik
     onDeselect: () => void
     parent: any
     properties: any
+    way: 'I' | 'U'
 
     constructor(props: any) {
         super(props);
 
+        this.way = props.way;
         this.properties = props.properties
         this.state = {...this.properties}
         this.onSelect = props.onSelect;
@@ -107,11 +117,13 @@ export class ButtonInteractive extends React.Component<any, Types.IPropertiesLik
     render() {
         return (
             <PropertiesContext.Provider value={{Properties: this.state, setProperties: this.handlePropertyChange}}>
+                {this.way === 'I' ? (
                 <BaseInteractive onSelect={this.onSelect} onDeselect={this.onDeselect} parent={this.parent}
                                 propertiesChangeHandler={this.handlePropertyChange} properties={{Base: this.state.Base}}
                                 propertiesArea={ButtonInteractivePropertiesArea}>
-                    <ButtonInteractiveInner />
+                    <ButtonInteractiveInner way={this.way} />
                 </BaseInteractive>
+                ) : <ButtonInteractiveInner way={this.way} />}
             </PropertiesContext.Provider>
             
         )

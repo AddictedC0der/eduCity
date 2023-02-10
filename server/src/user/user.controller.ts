@@ -1,8 +1,72 @@
-import { Body, Controller, Post, Get, Put, Delete, Param, Response, Req } from "@nestjs/common";
+import { Body, Controller, Post, Get, Put, Delete, Param, Response, Req, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger'
 import { User } from "./entities/user.entity";
-import { UserService } from "./user.service";
+import { Subject } from "./entities/subject.entity";
+import { UserService, SubjectService } from "./user.service";
 import { CreateUserDto, UpdateUserDto } from "./dto/user.dto";
+
+
+@ApiTags('Subject')
+@Controller('/api/subject')
+export class SubjectController {
+    constructor(private subjectService: SubjectService) {}
+
+    @ApiOperation({summary: 'Creation of subject.'})
+    @ApiResponse({status: 201, description: 'Subject has been successfully created.', type: Subject})
+    @Post('/create')
+    createSubject(@Body() name: string) {
+        return this.subjectService.createSubject(name)
+    }
+
+    @ApiOperation({summary: 'Update of subject.'})
+    @ApiResponse({status: 201, description: 'Subject has been successfully updated.', type: Subject})
+    @Post(':id')
+    updateSubject(@Param('id') subjectId: number, @Body() name: string) {
+        return this.subjectService.updateSubject(subjectId, name)
+    }
+
+    @ApiOperation({summary: 'Removal of subject.'})
+    @ApiResponse({status: 201, description: 'Subject has been successfully deleted.', type: Subject})
+    @Delete('/delete/:id')
+    deleteSubjectById(@Param('id') subjectId: number) {
+        return this.subjectService.deleteSubjectById(subjectId);
+    }
+
+    @ApiOperation({summary: 'Removal of subject.'})
+    @ApiResponse({status: 201, description: 'Subject has been successfully deleted.', type: Subject})
+    @Delete('/delete/name')
+    deleteSubjectByName(@Body() subjectName: string) {
+        return this.subjectService.deleteSubjectByName(subjectName);
+    }
+
+    @ApiOperation({summary: 'Get subject by Id.'})
+    @ApiResponse({status: 200, type: Subject})
+    @Get('/get/id/:id')
+    getSubjectById(@Param('id') SubjectId: number) {
+        return this.subjectService.getSubjectById(SubjectId);
+    }
+
+    @ApiOperation({summary: 'Get subject by name.'})
+    @ApiResponse({status: 200, type: User})
+    @Get('/get/name/:value')
+    getSubjectByName(@Param('value') SubjectName: string) {
+        return this.subjectService.getSubjectByName(SubjectName);
+    }
+
+    @ApiOperation({summary: 'Get all subject works.'})
+    @ApiResponse({status: 200})
+    @Get('/get/works')
+    getAllWorks(@Req() request, @Query() subjectName: {name: string}) {
+        return this.subjectService.getAllWorks(subjectName.name);
+    }
+
+    @ApiOperation({summary: 'Get all subjects.'})
+    @ApiResponse({status: 200, type: Subject})
+    @Get('/all')
+    getAll() {
+        return this.subjectService.getAllSubjects();
+    }
+}
 
 
 @ApiTags('User')

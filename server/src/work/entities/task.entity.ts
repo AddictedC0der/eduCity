@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToOne } from 'typeorm';
+import { TaskHashUiJSON } from '../dto/task.dto';
 import { Work } from './work.entity';
 
 
@@ -10,9 +11,11 @@ export class Task {
     @Column()
     TaskIndex: number;
 
-    @Column()
-    TaskHashUi: string;
+    @Column({
+        type: 'json'
+    })
+    TaskHashUi: TaskHashUiJSON;
 
-    @ManyToOne(() => Work, work => work.id)
+    @ManyToOne(() => Work, work => work.Tasks, {onDelete: 'CASCADE'})
     ParentWork: Work;
 }

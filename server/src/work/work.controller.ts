@@ -6,7 +6,7 @@ import { WorkService, TaskService } from "./work.service";
 import { CreateWorkDto, UpdateWorkDto } from "./dto/work.dto";
 
 
-@ApiTags('User')
+@ApiTags('Work')
 @Controller('/api/work')
 export class WorkController {
     constructor(private workService: WorkService,

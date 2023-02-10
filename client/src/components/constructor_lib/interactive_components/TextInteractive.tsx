@@ -60,11 +60,19 @@ export function TextInteractiveInner(props: any) {
         properties.setProperties({Local: {...properties.Properties.Local, Text: event.target.value}})
         // props.propertiesChangeHandler({Local: {Text: event.target.value}})
     }
-    console.log(properties.Properties)
+
+    const shift = props.way !== 'I' ? {
+        left: properties.Properties.Base.X,
+        top: properties.Properties.Base.Y,
+    } : {}
+
     return (
         <TextField multiline fullWidth={props.inter} value={properties.Properties.Local.Text} onChange={handleManualChange}
             inputProps={{style: {color: properties.Properties.Local.TextColor}}}
-            sx={{height: props.inter ? '100%' : properties.Properties.Base.Height, width: props.inter ? '100%' : properties.Properties.Base.Width}} />
+            sx={{height: props.way === 'I' ? '100%' : properties.Properties.Base.Height, width: props.way === 'I' ? '100%' : properties.Properties.Base.Width,
+            position: 'absolute',
+            ...shift
+        }} />
     )
 }
 
@@ -73,10 +81,10 @@ export class TextInteractive extends React.Component<any, Types.IPropertiesLike>
     onSelect: () => void
     onDeselect: () => void
     parent: any
-    onPropertyChange: () => void
+    // onPropertyChange: () => void
     way: 'I' | 'U'
     properties: Types.IPropertiesLike
-
+    
     constructor(props: any) {
         super(props);
 
@@ -85,21 +93,16 @@ export class TextInteractive extends React.Component<any, Types.IPropertiesLike>
         console.log(this.state)
 
         this.way = props.way;
-        this.onPropertyChange = props.onPropertyChange;
+        // this.onPropertyChange = props.onPropertyChange;
         this.onSelect = props.onSelect;
         this.onDeselect = props.onDeselect;
         this.parent = props.parent;
         this.handlePropertyChange = this.handlePropertyChange.bind(this);
-        this.getState = this.getState.bind(this);
     }
 
     handlePropertyChange(transferObj: Types.IPropertiesLike | Types.IBaseInteractiveProperties) {
         this.setState(transferObj as Types.IPropertiesLike);
-        this.onPropertyChange()
-    }
-
-    getState() {
-        return this.state;
+        // this.onPropertyChange()
     }
 
     render() {
@@ -110,9 +113,9 @@ export class TextInteractive extends React.Component<any, Types.IPropertiesLike>
                     <BaseInteractive onSelect={this.onSelect} onDeselect={this.onDeselect} parent={this.parent}
                                 propertiesChangeHandler={this.handlePropertyChange} properties={{Base: this.state.Base}}
                                 propertiesArea={TextInteractivePropertiesArea}>
-                        <TextInteractiveInner inter={true} />
+                        <TextInteractiveInner way={this.way} />
                     </BaseInteractive>
-                    ) : <TextInteractiveInner inter={false} />}
+                    ) : <TextInteractiveInner way={this.way} />}
                 </PropertiesContext.Provider>
         )
     }

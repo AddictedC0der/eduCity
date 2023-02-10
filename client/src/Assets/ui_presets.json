@@ -1,0 +1,102 @@
+{
+    "Presets": [
+        {
+            "Name": "Choose an option",
+            "UI": {
+                "Ratio": {
+                    "W": 1,
+                    "H": 1
+                },
+                "Repo": {
+                    "pages": [
+                        {
+                            "elements": [
+                                {
+                                    "type": "TxtInt",
+                                    "properties": {
+                                        "Base": {
+                                            "Width": 800,
+                                            "Height": 200,
+                                            "X": 48,
+                                            "Y": 20
+                                        },
+                                        "Local": {
+                                            "Text": "Lorem ispus dolar sit amet.",
+                                            "TextColor": "black"
+
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "CbxInt",
+                                    "properties": {
+                                        "Base": {
+                                            "Width": 150,
+                                            "Height": 50,
+                                            "X": 100,
+                                            "Y": 300
+                                        },
+                                        "Local": {
+                                            "Text": "Option 1",
+                                            "TextColor": "black",
+                                            "Checked": false
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "CbxInt",
+                                    "properties": {
+                                        "Base": {
+                                            "Width": 150,
+                                            "Height": 50,
+                                            "X": 100,
+                                            "Y": 360
+                                        },
+                                        "Local": {
+                                            "Text": "Option 2",
+                                            "TextColor": "black",
+                                            "Checked": false
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "CbxInt",
+                                    "properties": {
+                                        "Base": {
+                                            "Width": 150,
+                                            "Height": 50,
+                                            "X": 100,
+                                            "Y": 420
+                                        },
+                                        "Local": {
+                                            "Text": "Option 3",
+                                            "TextColor": "black",
+                                            "Checked": false
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "CbxInt",
+                                    "properties": {
+                                        "Base": {
+                                            "Width": 150,
+                                            "Height": 50,
+                                            "X": 100,
+                                            "Y": 480
+                                        },
+                                        "Local": {
+                                            "Text": "Option 4",
+                                            "TextColor": "black",
+                                            "Checked": false
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+    
+}

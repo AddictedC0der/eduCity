@@ -16,6 +16,65 @@ const defaultStats: CreateStatsDto = {
 
 
 @Injectable()
+export class SubjectService {
+    constructor(@InjectRepository(Subject) private SubjectRepo: Repository<Subject>) {}
+
+    async createSubject(name: string) {
+        const response = this.SubjectRepo.create({SubjectName: name});
+        await this.SubjectRepo.save(response);
+        return response;
+    }
+
+    async deleteSubjectById(id: number) {
+        const response = await this.SubjectRepo.delete(id);
+        return response;
+    }
+
+    async deleteSubjectByName(name: string) {
+        const response = await this.SubjectRepo.delete({SubjectName: name})
+        return response;
+    }
+
+    async updateSubject(id: number, newName: string) {
+        const response = await this.SubjectRepo.update({id: id}, {SubjectName: newName});
+        return response;
+    }
+
+    async getAllSubjects() {
+        const response = await this.SubjectRepo.find();
+        return response;
+    }
+
+    async getSubjectByName(name: string) {
+        const response = await this.SubjectRepo.findOne({
+            where: {SubjectName: name}
+        })
+        return response;
+    }
+
+    async getAllWorks(subjectName: string) {
+        console.log(`Subject Name:`)
+        console.log(subjectName)
+        console.log(await this.SubjectRepo.find())
+        const response = await this.SubjectRepo.findOne({
+            where: {SubjectName: subjectName},
+            relations: ['Works']
+        })
+        console.log(response)
+        return response.Works;
+    }
+
+    async getSubjectById(id: number) {
+        const response = await this.SubjectRepo.findOne({
+            where: {id: id}
+        })
+        return response;
+    }
+
+}
+
+
+@Injectable()
 export class UserService {
     constructor(@InjectRepository(User) private UserRepo: Repository<User>,
                 @InjectRepository(Student) private StudentRepo: Repository<Student>,

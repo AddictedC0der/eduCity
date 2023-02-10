@@ -1,11 +1,14 @@
 import * as React from 'react';
 import { Typography, Paper, Button, Skeleton } from '@mui/material';
 import { MainLayout } from '../layouts/MainLayout';
-import { DeserializeUI } from '../constructor_lib/algorithms/serialization';
+import { Serializer } from '../constructor_lib/algorithms/serialization';
 import { useLocation , useNavigate} from 'react-router-dom';
 import { RoutesEnum } from '../../router';
 import { ConstructorService } from '../../http/constructorAPI';
 import { useQuery } from '../../hooks/useQuery';
+import { createConstructorStore } from '../constructor_lib/Session';
+import { Timer } from '../complex/Timer';
+import * as Constants from '../constructor_lib/Constants';
 
 
 function ConclusionPage(props: any) {
@@ -22,24 +25,42 @@ function ConclusionPage(props: any) {
 function TaskPage(props: any) {
     const canvasRef = React.createRef<HTMLDivElement>();
     const { work, tasks } = props.work;
-    const hashes = tasks.map((task: any) => {return task.TaskHashUi})
-    const repo = DeserializeUI(hashes, canvasRef);
+    const serializer = new Serializer();
+    const hashes = {pages: tasks.map((task: any) => {return task.TaskHashUi})}
+    const store = createConstructorStore({...Constants.initialConstructorState, totalPages: hashes.pages.length});
+    const repo = serializer.deserialize(hashes, canvasRef, store, 'U');
     console.log(repo)
     return (
-        <>
-        <Typography>Task 1/{tasks.length}</Typography>
-        <Paper ref={canvasRef} elevation={8} sx={{width: '90%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-        {repo ?
-        repo.renderComponents()
-        : <Typography>Something went wrong!</Typography>}
-        </Paper>
-        </>
+        <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly'}}>
+                <Timer value={work.Time} />
+                <Typography sx={{marginLeft: '10%'}}>Задание 1/{tasks.length}</Typography>
+            </div>
+            <Paper ref={canvasRef} elevation={8} sx={{width: '90%', height: '100%'}}>
+                {repo ?
+                repo.renderComponents()
+                : <Typography>Something went wrong!</Typography>}
+            </Paper>
+        </div>
     )
 }
 
 
 function PreviewPage(props: any) {
     const { work, tasks } = props.work;
+
+    const renderTime = (time: number) => {
+        if (time != null) {
+            console.log(time)
+            let hours = Math.floor(time / 3600000)
+            let minutes = Math.floor((time - hours*3600000) / 6000)
+            let seconds = (time - hours*3600000 - minutes*6000) / 1000
+            console.log(hours, minutes, seconds)
+            return `${hours}:${minutes}:${seconds}`
+        }
+        return 'Безлимитно'
+    }
+
     return (
         <Paper elevation={8} sx={{width: '70%', height: '60%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
             <div style={{width: '100%', height: '30%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
@@ -48,15 +69,12 @@ function PreviewPage(props: any) {
             </div>
             <div style={{width: '100%', height: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                 <Typography>{tasks.length} заданий</Typography>
-                <Typography>Время на выполнение: {work.Time}</Typography>
+                <Typography>Время на выполнение: {renderTime(work.Time)}</Typography>
             </div>
             <Button variant='contained' onClick={() => props.swiftPage(1)}>Начать</Button>
         </Paper>
     )
 }
-
-
-
 
 
 export function TaskView() {

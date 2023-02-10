@@ -11,6 +11,8 @@ import * as Types from '../types';
 export function ConstructorCanvas(props: Types.CanvasProps) {
     const canvasRef = React.useRef(null);
 
+    const [demo, setDemo] = React.useState(0)
+
     const selectedComponent = useConstructorStore(props.store, React.useCallback((state: Types.IConstructorState) => state.selectedComponent, []));
     const currentPage = useConstructorStore(props.store, React.useCallback((state: Types.IConstructorState) => state.currentPage, []));
 
@@ -49,13 +51,13 @@ export function ConstructorCanvas(props: Types.CanvasProps) {
     }
 
     return (
-        <Paper ref={canvasRef} sx={{width: '100%', height: '90%', position: 'relative',
-                webkitBoxShadow: '0px 3px 8px 6px rgba(34, 60, 80, 0.2)',
-                mozBoxShadow: '0px 3px 8px 6px rgba(34, 60, 80, 0.2)',
-                boxShadow: '0px 3px 8px 6px rgba(34, 60, 80, 0.2)'}}>
-            <div ref={drop} style={{width: '100%', height: '100%'}}>
-                <Typography>This is canvas {currentPage}</Typography>
-                {props.repo.renderComponents()}
+        <Paper elevation={5} ref={props.canvasRef} sx={{width: '100%', height: '90%'}}>
+            <div style={{width: '65.6%', height: '90%', position: 'absolute'}} id='absolute_parent'>
+                <div ref={drop} style={{width: '100%', height: '100%'}}>
+                    <Typography>This is canvas {currentPage}</Typography>
+                    <button onClick={() => setDemo(demo + 1)}>Force rerender</button>
+                    {props.repo.renderComponents()}
+                </div>
             </div>
         </Paper>
     )

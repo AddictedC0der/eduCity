@@ -36,6 +36,7 @@ export interface RepositoryPage {
 export interface CanvasProps {
     repo: ComponentsRepository;
     store: IConstructorStore;
+    canvasRef: any
 }
 
 export interface PropetiesAreaProps {

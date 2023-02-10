@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 function SubjectBox(props: {title: string, path: string}) {
     const navigate = useNavigate()
     return (
-        <Button onClick={() => navigate(props.path)} sx={{backgroundColor: 'red', color: 'white', width: '30%', height: '10vh',
+        <Button onClick={() => navigate(props.path, {state: {subject: props.title}})} sx={{backgroundColor: 'red', color: 'white', width: '30%', height: '10vh',
                 '&:hover': {backgroundColor: 'black'}}}>
             <Typography>{props.title}</Typography>
         </Button>

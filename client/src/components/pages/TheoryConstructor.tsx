@@ -61,7 +61,7 @@ export function TheoryConstructor() {
         console.log(selection?.toString())
     }, [selection])
 
-    document.addEventListener('selectionchange', () => setSelection(document.getSelection()?.toString()))
+    // document.addEventListener('selectionchange', () => setSelection(document.getSelection()?.toString()))
     // window.addEventListener('selectionchange', () => {console.log(window.getSelection()?.toString())})
     // window.onselectionchange = () => {console.log('Changed!')}
 

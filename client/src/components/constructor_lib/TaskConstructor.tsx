@@ -20,6 +20,8 @@ import { CreateWorkDialog } from '../dialogs/CreateWork';
 export function TaskConstructor() {
     const [openDialog, setOpenDialog] = React.useState<boolean>(false);
 
+    const canvasRef = React.useRef(null)
+
     const handleCloseDialog = () => {
         setOpenDialog(false);
     }
@@ -28,7 +30,14 @@ export function TaskConstructor() {
     const currentPage = useConstructorStore(store, React.useCallback((state: Types.IConstructorState) => state.currentPage, []));
     const totalPages = useConstructorStore(store, React.useCallback((state: Types.IConstructorState) => state.totalPages, []));
 
-    const componentsRepo = React.useMemo(() => new ComponentsRepository(store), [])
+    // let componentsRepo = React.useMemo(() => new ComponentsRepository(store), [])
+
+    const [componentsRepo, setComponentsRepo] = React.useState(new ComponentsRepository(store))
+
+    const changeCurrentRepo = (newRepo: any) => {
+        console.log('Called!')
+        setComponentsRepo(newRepo);
+    }
 
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -44,19 +53,19 @@ export function TaskConstructor() {
             <DndProvider backend={HTML5Backend}>
                 <Grid container sx={{display: 'flex', flexDirection: 'row', width: '100%', height: '100vh'}} columnSpacing={2}>
                     <Grid item xs={2}>
-                        <Toolbar />
+                        <Toolbar changeRepo={changeCurrentRepo} store={store} parent={canvasRef} />
                     </Grid>
                     <Grid container item xs sx={{width: '100%'}}>
-                        <ConstructorCanvas repo={componentsRepo} store={store} />
+                        <ConstructorCanvas repo={componentsRepo} canvasRef={canvasRef} store={store} />
                         <Grid item xs={2} />
-                        <Grid item xs sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                        <Grid item xs sx={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end'}}>
                             <Pagination count={totalPages} page={currentPage} onChange={handleChangePage}
                                 sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} />
                             <Fab size='small' onClick={handleAddPage}>
                                 <AddIcon />
                             </Fab>
                         </Grid>
-                        <Grid item xs={2}>
+                        <Grid item xs={2} sx={{display: 'flex', alignItems: 'flex-end'}}>
                             <Button variant='contained' onClick={() => setOpenDialog(true)}>Создать</Button>
                         </Grid>
                     </Grid>

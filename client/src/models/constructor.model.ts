@@ -1,5 +1,8 @@
+import { PageJSON } from '../components/constructor_lib/algorithms/serialization';
+
+
 export interface ITask {
-    TaskHashUi: string;
+    TaskHashUi: PageJSON;
     TaskIndex: number;
 }
 

@@ -48,9 +48,9 @@ export class WorkService {
                 private TaskService: TaskService) {}
 
     async createWork(workDto: CreateWorkDto): Promise<Work> {
-        const createTasks = async (tasks: any[], parentId: number) => {
+        const createTasks = async (tasks: any[], parentInstance: Partial<Work>) => {
             for (let i = 0; i < tasks.length; i++) {
-                await this.TaskService.createTask(tasks[i]);
+                await this.TaskService.createTask({...tasks[i], ParentWork: parentInstance.id});
             }
         }
         
@@ -67,7 +67,7 @@ export class WorkService {
 
         const response = this.WorkRepo.create({...formed});
         await this.WorkRepo.save(response);
-        await createTasks(workDto.Tasks, response.id);
+        await createTasks(workDto.Tasks, response);
         return response;
     }
 

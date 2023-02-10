@@ -4,6 +4,7 @@ import { MainLayout } from '../layouts/MainLayout';
 import { useNavigate } from 'react-router-dom';
 import { RoutesEnum } from '../../router';
 
+
 function ResourcesBlock(props: {title: string, link: string}) {
     const navigate = useNavigate()
 
@@ -18,8 +19,6 @@ function ResourcesBlock(props: {title: string, link: string}) {
 
 
 export function MainPage() {
-    
-
     return (
         <MainLayout paddingMain='ALL'>
             <Grid container direction='row' alignItems='center' justifyContent='center' height='80vh' width='100%'

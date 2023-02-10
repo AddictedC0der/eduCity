@@ -111,6 +111,7 @@ export class BaseInteractive extends React.Component<
 
     handleClickOutside(event: any) {
         if (this.wrapperRef && !this.wrapperRef.current.contains(event.target) && this.parent.current.contains(event.target)) {
+            console.log('Clicked outside')
             this.deselectSelf()
         } else {
             if (this.wrapperRef && this.wrapperRef.current.contains(event.target)) {
@@ -154,6 +155,7 @@ export class BaseInteractive extends React.Component<
             //@ts-ignore
             document.getElementById('PropertiesAreaPlaceholder')
         )
+        console.log(this.state.properties.Base)
         return (
             <>
             {this.state.selected ? PropertiesArea : null}

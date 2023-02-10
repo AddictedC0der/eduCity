@@ -14,15 +14,20 @@ export class ComponentsRepository {
         
     }
 
-    componentChangedProperties(componentId: string) {
-        let target: Types.RepositoryElement | undefined;
-        for (let i = 0; i < this.repository.length; i++) {
-            target = this.repository[i].map(e => {if(e.id === componentId) return e})[0]
-        }
-        if (target) {
-            const state = target.componentRef.current.getState();
-            target.properties = state;
-        }
+    // componentChangedProperties(componentId: string) {
+    //     let target: Types.RepositoryElement | undefined;
+    //     for (let i = 0; i < this.repository.length; i++) {
+    //         target = this.repository[i].map(e => {if(e.id === componentId) return e})[0]
+    //     }
+    //     if (target) {
+    //         const state = target.componentRef.current.getState();
+    //         target.properties = state;
+    //     }
+    // }
+
+    trackChanges(transferObj: Types.IPropertiesLike) {
+        console.log('Changes detected:');
+        console.log(transferObj);
     }
 
     createComponent(tool: Types.ToolType, parent: any, position: {X: number, Y: number}, way: 'I' | 'U', properties?: Types.IPropertiesLike) {
@@ -36,10 +41,10 @@ export class ComponentsRepository {
             properties={props}
             key={newId}
             parent={parent}
-            ref={newComponentRef}
+            wrapperRef={newComponentRef}
             onSelect={() => {this._store.setState((prev: Types.IConstructorState) => ({...prev, selectedComponent: newId}))}}
             onDeselect={() => {this._store.setState((prev: Types.IConstructorState) => ({...prev, selectedComponent: null}))}}
-            onPropertyChange={() => this.componentChangedProperties(newId)}
+            onPropertyChange={this.trackChanges}
         />
 
         const resultObj = {
@@ -48,7 +53,6 @@ export class ComponentsRepository {
             properties: props,
             id: newId
         }
-
         this.addComponent(resultObj)
     }
 
@@ -101,10 +105,11 @@ export class ComponentsRepository {
         if (this.repository[this._store.getState().currentPage - 1]) {
             return this.repository[this._store.getState().currentPage - 1].map(comp => {
                 if (comp.componentRef.current) {
+                    console.log('EventHandle connection in components repository')
                     console.log(comp)
                     comp.componentRef.current.handlePropertyChange(comp.properties);
                 }
-                
+                console.log('Returning current component during rendering state...')
                 return comp.component
             })
         }
