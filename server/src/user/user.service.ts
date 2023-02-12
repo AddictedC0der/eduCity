@@ -1,17 +1,18 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
-import { DeleteResult, InsertResult, Repository, UpdateResult } from "typeorm";
+import { DeepPartial, DeleteResult, InsertResult, Repository, UpdateResult } from "typeorm";
 import { User, Student, Parent, Teacher } from './entities/user.entity';
 import { Subject } from "./entities/subject.entity";
 import { Stats } from "./entities/stats.entity";
 import { CreateUserDto, UpdateUserDto } from "./dto/user.dto";
 import { CreateStatsDto } from "./dto/stats.dto";
 import { DataSource } from "typeorm";
+import { Solution } from "../work/entities/solution.entity";
 
 
 const defaultStats: CreateStatsDto = {
-    CompletedWorks: 0,
-    LostWorks: 0
+    //@ts-ignore
+    Solutions: 0 as DeepPartial<Solution[]>,
 }
 
 
@@ -53,14 +54,10 @@ export class SubjectService {
     }
 
     async getAllWorks(subjectName: string) {
-        console.log(`Subject Name:`)
-        console.log(subjectName)
-        console.log(await this.SubjectRepo.find())
         const response = await this.SubjectRepo.findOne({
             where: {SubjectName: subjectName},
             relations: ['Works']
         })
-        console.log(response)
         return response.Works;
     }
 

@@ -20,6 +20,7 @@ import { ClassModule } from './class/class.module';
 import { ChatMessage } from './class/entities/chat_message.entity';
 import { myMigration1670034134209 } from './migrations/1670034134209-myMigration';
 import { CustomLogger } from './logging/CustomLogger';
+import { Solution } from './work/entities/solution.entity';
 
 
 @Module({
@@ -32,7 +33,7 @@ import { CustomLogger } from './logging/CustomLogger';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Teacher, Student, Parent, Class, School, Stats, Subject, Work, Task, Token, ChatMessage],
+      entities: [User, Teacher, Student, Parent, Class, School, Stats, Subject, Work, Task, Token, ChatMessage, Solution],
       synchronize: true,
       migrationsTableName: "migrations",
       // migrations: [myMigration1670034134209],

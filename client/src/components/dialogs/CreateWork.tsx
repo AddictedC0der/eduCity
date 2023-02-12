@@ -317,7 +317,7 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
     const handleCreateWork = () => {
         console.log('Creation in process...')
         const result = serializer.serialize(props.repo);
-        formData.Tasks = result.pages.map((res, i) => {return {TaskHashUi: res, TaskIndex: i}})
+        formData.Tasks = result.tasks.map((res, i) => {return {TaskHashUi: res, TaskIndex: i}})
         console.log(formData)
         // formData.Time = formData.Time ? formData.Time : -1;
         // formData.AdditionalTime = formData.AdditionalTime ? formData.AdditionalTime : -1;

@@ -2,15 +2,17 @@ import { Body, Controller, Post, Get, Put, Delete, Param, Response, Req } from "
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { Work } from "./entities/work.entity";
 import { Task } from "./entities/task.entity";
-import { WorkService, TaskService } from "./work.service";
+import { WorkService, TaskService, SolutionService } from "./work.service";
 import { CreateWorkDto, UpdateWorkDto } from "./dto/work.dto";
+import { Solution } from "./entities/solution.entity";
+import { CreateSolutionDto } from "./dto/solution.dto";
 
 
 @ApiTags('Work')
 @Controller('/api/work')
 export class WorkController {
     constructor(private workService: WorkService,
-                private taskServidce: TaskService) {}
+                private taskService: TaskService) {}
 
     @ApiOperation({summary: 'Creation of user.'})
     @ApiResponse({status: 201, description: 'User has been successfully created.', type: Work})
@@ -52,5 +54,33 @@ export class WorkController {
     @Get('/all')
     getAll() {
         return this.workService.getAll();
+    }
+}
+
+
+@ApiTags('Solution')
+@Controller('/api/solution')
+export class SolutionController {
+    constructor(private solutionService: SolutionService) {}
+
+    @ApiOperation({summary: 'Creation of solution.'})
+    @ApiResponse({status: 201, description: 'Solution has been successfully created.', type: Solution})
+    @Post('/create')
+    createSolution(@Body() solutionDto: CreateSolutionDto) {
+        return this.solutionService.createSolution(solutionDto);
+    }
+
+    @ApiOperation({summary: 'Get all users solutions.'})
+    @ApiResponse({status: 200, type: Solution})
+    @Get('/get/user/:id')
+    getUserSolutions(@Param('id') userId: number) {
+        return this.solutionService.getUserSolutions(userId);
+    }
+
+    @ApiOperation({summary: 'Get all work solutions.'})
+    @ApiResponse({status: 200, type: Solution})
+    @Get('/get/work/:id')
+    getWorkSolutions(@Param('id') workId: number) {
+        return this.solutionService.getWorkSolutions(workId);
     }
 }

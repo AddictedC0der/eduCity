@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString, Length, IsArray, IsNumber, IsBoolean } from "class-validator";
-import { User } from "src/user/entities/user.entity";
+import { User } from "../../user/entities/user.entity";
 import { DeepPartial } from "typeorm";
 
 

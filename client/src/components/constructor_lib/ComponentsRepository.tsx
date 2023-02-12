@@ -11,7 +11,11 @@ export class ComponentsRepository {
     constructor(store: Types.IConstructorStore) {
         this.repository = [[]];
         this._store = store;
-        
+        this.trackChanges = this.trackChanges.bind(this);
+        this.createComponent = this.createComponent.bind(this);
+        this.renderComponents = this.renderComponents.bind(this);
+        this.addComponent = this.addComponent.bind(this);
+        this.addPages = this.addPages.bind(this);
     }
 
     // componentChangedProperties(componentId: string) {
@@ -25,9 +29,14 @@ export class ComponentsRepository {
     //     }
     // }
 
-    trackChanges(transferObj: Types.IPropertiesLike) {
+    trackChanges(transferObj: Types.IPropertiesLike, id: string) {
         console.log('Changes detected:');
-        console.log(transferObj);
+        console.log(this.repository);
+        this.repository.map(page => page.map(e => {
+            if (e.id === id) {
+                e.properties.Local = transferObj.Local;
+            }
+        }))
     }
 
     createComponent(tool: Types.ToolType, parent: any, position: {X: number, Y: number}, way: 'I' | 'U', properties?: Types.IPropertiesLike) {
@@ -44,7 +53,7 @@ export class ComponentsRepository {
             wrapperRef={newComponentRef}
             onSelect={() => {this._store.setState((prev: Types.IConstructorState) => ({...prev, selectedComponent: newId}))}}
             onDeselect={() => {this._store.setState((prev: Types.IConstructorState) => ({...prev, selectedComponent: null}))}}
-            onPropertyChange={this.trackChanges}
+            onPropertyChange={(transferObj: Types.IPropertiesLike) => this.trackChanges(transferObj, newId)}
         />
 
         const resultObj = {
@@ -105,11 +114,8 @@ export class ComponentsRepository {
         if (this.repository[this._store.getState().currentPage - 1]) {
             return this.repository[this._store.getState().currentPage - 1].map(comp => {
                 if (comp.componentRef.current) {
-                    console.log('EventHandle connection in components repository')
-                    console.log(comp)
                     comp.componentRef.current.handlePropertyChange(comp.properties);
                 }
-                console.log('Returning current component during rendering state...')
                 return comp.component
             })
         }

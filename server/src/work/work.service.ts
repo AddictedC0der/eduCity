@@ -8,6 +8,40 @@ import { CreateTaskDto } from "./dto/task.dto";
 import { DataSource } from "typeorm";
 import { Subject } from "../user/entities/subject.entity";
 import { User } from "../user/entities/user.entity";
+import { Solution } from "./entities/solution.entity";
+import { CreateSolutionDto } from "./dto/solution.dto";
+import { Stats } from "../user/entities/stats.entity";
+
+
+@Injectable()
+export class SolutionService {
+    constructor(@InjectRepository(Solution) private SolutionRepo: Repository<Solution>,
+                @InjectRepository(Stats) private StatsRepo: Repository<Stats>,
+                @InjectRepository(User) private UserRepo: Repository<User>,
+                @InjectRepository(Work) private WorkRepo: Repository<Work>) {}
+
+    async createSolution(solutionDto: CreateSolutionDto) {
+        const targetUser = await this.UserRepo.findOne({where: {id: solutionDto.Author}});
+        const targetStats = await this.StatsRepo.findOne({where: {MasterUser: targetUser}});
+        const targetWork = await this.WorkRepo.findOne({where: {id: solutionDto.Work}});
+        const response = this.SolutionRepo.create({...solutionDto, Author: targetStats, Work: targetWork});
+        await this.SolutionRepo.save(response);
+        return response;
+    }
+
+    async getUserSolutions(userId: number) {
+        const targetUser = await this.UserRepo.findOne({where: {id: userId}});
+        const targetStats = await this.StatsRepo.findOne({where: {MasterUser: targetUser}});
+        const response = await this.SolutionRepo.find({where: {Author: targetStats}});
+        return response;
+    }
+
+    async getWorkSolutions(workId: number) {
+        const targetWork = await this.WorkRepo.findOne({where: {id: workId}});
+        const response = await this.SolutionRepo.find({where: {Work: targetWork}});
+        return response;
+    }
+}
 
 
 @Injectable()

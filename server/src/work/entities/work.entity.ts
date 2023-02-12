@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinTable, JoinColumn } from 'typeorm';
 import { Subject } from '../../user/entities/subject.entity';
 import { Teacher, User } from '../../user/entities/user.entity';
+import { Solution } from './solution.entity';
 import { Task } from './task.entity';
 
 
@@ -41,4 +42,7 @@ export class Work {
 
     @OneToMany(() => Task, task => task.ParentWork)
     Tasks: Task[];
+
+    @OneToMany(() => Solution, solution => solution.Work)
+    Solutions: Solution[];
 }

@@ -2,8 +2,12 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString, Length, IsArray, IsNumber, IsJSON } from "class-validator";
 
 
+export interface WorkLikeJSON {
+    tasks: TaskHashUiJSON[];
+}
+
+
 export interface TaskHashUiJSON {
-    answer: string;
     elements: {
         type: string;
         properties: any
