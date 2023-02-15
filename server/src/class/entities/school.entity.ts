@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "../../user/entities/user.entity";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from "typeorm";
 
 
 @Entity()
@@ -11,4 +12,14 @@ export class School {
 
     @Column()
     Address: string
+
+    @Column()
+    Link: string;
+
+    @Column()
+    Rating: number;
+
+    @ManyToMany(() => User)
+    @JoinTable()
+    Admins: User[];
 }

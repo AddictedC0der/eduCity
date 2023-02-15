@@ -3,14 +3,14 @@ export interface IUser {
     UserLogin: string,
     UserEmail: string,
     UserPassword: string,
-    UserRole: string
+    Role: string
 }
 
 export interface IUserDto {
     UserLogin: string,
     UserEmail: string,
     UserPassword: string,
-    UserRole: string
+    Role: string
 }
 
 export interface IUserLogin {

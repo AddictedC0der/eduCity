@@ -17,7 +17,7 @@ export function UserAccount() {
                         <Paper sx={{backgroundColor: 'blue', width: '100%', height: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center'}}>
                             <Box sx={{height: '100%', display: 'flex', direction: 'column', alignItems: 'center'}}>
                                 <Avatar sx={{width: 200, height: 200}}></Avatar>
-                                <Typography>Role {user.user.UserRole}</Typography>
+                                <Typography>Role {user.user.Role}</Typography>
                             </Box>
                             
                             <Box sx={{height: '90%'}}>

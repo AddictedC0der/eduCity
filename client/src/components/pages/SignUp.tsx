@@ -26,7 +26,7 @@ export default function SignUp() {
             UserLogin: data.get('login') as string,
             UserPassword: data.get('password') as string,
             UserEmail: data.get('email') as string,
-            UserRole: role.name
+            Role: role.name
         }
         console.log(dto);
         register(dto);

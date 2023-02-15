@@ -12,7 +12,8 @@ import { useTypedSelector } from '../hooks/useTypedSelector';
 const variants = [
     {title: 'Главная', path: '/home'},
     {title: 'Мой класс', path: '/my_class'},
-    {title: 'Предметы', path: '/subjects'}
+    {title: 'Предметы', path: '/subjects'},
+    {title: 'Школы', path: '/schools'}
 ]
 
 

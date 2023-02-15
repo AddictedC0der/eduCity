@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Get, Put, Delete, Param, Response, Req, Query } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger'
-import { User } from "./entities/user.entity";
+import { Parent, Student, Teacher, User } from "./entities/user.entity";
 import { Subject } from "./entities/subject.entity";
 import { UserService, SubjectService } from "./user.service";
 import { CreateUserDto, UpdateUserDto } from "./dto/user.dto";
@@ -114,6 +114,27 @@ export class UserController {
     @Get('/get/email/:value')
     getUserByEmail(@Param('value') userEmail: string) {
         return this.userService.getUserByEmail(userEmail);
+    }
+
+    @ApiOperation({summary: 'Get all parents.'})
+    @ApiResponse({status: 200, type: Parent})
+    @Get('/get/parents')
+    getAllParents() {
+        return this.userService.getAllParents();
+    }
+
+    @ApiOperation({summary: 'Get all teachers.'})
+    @ApiResponse({status: 200, type: Teacher})
+    @Get('/get/teachers')
+    getAllTeachers() {
+        return this.userService.getAllTeachers();
+    }
+
+    @ApiOperation({summary: 'Get all students.'})
+    @ApiResponse({status: 200, type: Student})
+    @Get('/get/students')
+    getAllStudents() {
+        return this.userService.getAllStudents();
     }
 
     @ApiOperation({summary: 'Get all users.'})

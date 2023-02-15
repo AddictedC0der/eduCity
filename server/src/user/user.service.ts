@@ -82,7 +82,7 @@ export class UserService {
 
     async createUser(userDto: CreateUserDto): Promise<any> {
         let response: any = {};
-        switch(userDto.UserRole) {
+        switch(userDto.Role) {
             case 'Student': {
                 response.user = this.StudentRepo.create({...userDto});
                 await this.StudentRepo.save(response.user);
@@ -116,8 +116,6 @@ export class UserService {
     }
 
     async getUserById(userId: number): Promise<User> {
-        const md = await this.UserRepo.metadata
-        console.log(md)
         const response = await this.UserRepo.findOne({
             where: {id: userId},
             relations: ['UserStats']
@@ -140,8 +138,23 @@ export class UserService {
         return response;
     }
 
+    async getAllParents(): Promise<Parent[]> {
+        const response = await this.ParentRepo.find();
+        return response;
+    }
+
+    async getAllTeachers(): Promise<Teacher[]> {
+        const response = await this.TeacherRepo.find();
+        return response;
+    }
+
+    async getAllStudents(): Promise<Student[]> {
+        const response = await this.StudentRepo.find();
+        return response;
+    }
+
     async getAll(): Promise<User[]> {
-        const response = await this.UserRepo.find()
+        const response = await this.UserRepo.find();
         return response;
     }
 }

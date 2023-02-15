@@ -134,7 +134,6 @@ export function Subject() {
     }
 
     const location = useLocation()
-    console.log(location)
 
     return (
         <MainLayout paddingMain='ALL'>

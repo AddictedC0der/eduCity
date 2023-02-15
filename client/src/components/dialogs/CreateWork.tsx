@@ -233,7 +233,7 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
     const steps = ['Общие настройки', 'Насткройки времени', 'Настройки доступа'];
 
     const { user } = useTypedSelector(state => state.user);
-    console.log(user.user.id)
+
     const initial: IWork = {
         Name: 'Делимость чисел',
         Author: user.user.id,
@@ -315,10 +315,8 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
     }
 
     const handleCreateWork = () => {
-        console.log('Creation in process...')
         const result = serializer.serialize(props.repo);
         formData.Tasks = result.tasks.map((res, i) => {return {TaskHashUi: res, TaskIndex: i}})
-        console.log(formData)
         // formData.Time = formData.Time ? formData.Time : -1;
         // formData.AdditionalTime = formData.AdditionalTime ? formData.AdditionalTime : -1;
         ConstructorService.createWork(formData)
@@ -330,7 +328,7 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
             <DialogTitle>Создание работы</DialogTitle>
             <DialogContent sx={{display: 'flex', flexDirection: 'column', justifyContent: 'start', alignItems: 'start'}}>
                 <Stepper activeStep={activeStep}>
-                    {steps.map((label, index) => {
+                    {steps.map(label => {
                         return (
                             <Step key={label}>
                                 <StepLabel>{label}</StepLabel>

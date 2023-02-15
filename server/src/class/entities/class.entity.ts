@@ -9,16 +9,17 @@ export class Class {
     id: number
     
     @Column()
-    RoleName: string
+    Name: string
 
     @OneToOne(() => School)
     @JoinColumn()
-    School: number
+    School: School
 
-    @ManyToMany(() => Student, user => user.UserClass, {nullable: true})
-    @JoinColumn()
+    @ManyToMany(() => User, {nullable: true})
+    @JoinTable()
     ContainedStudents: User[];
 
-    @ManyToMany(() => Teacher, user => user.UserClass, {nullable: true})
-    ContainedTeachers: Teacher[];
+    @ManyToMany(() => User, {nullable: true})
+    @JoinTable()
+    ContainedTeachers: User[];
 }

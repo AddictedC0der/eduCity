@@ -18,7 +18,7 @@ export class CreateUserDto {
 
     @ApiProperty({example: 'Teacher', description: 'Role of user.'})
     @IsString({message: 'Role must be string.'})
-    readonly UserRole: string;
+    readonly Role: string;
 }
 
 export class UpdateUserDto {

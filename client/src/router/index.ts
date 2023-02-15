@@ -13,6 +13,8 @@ import subjects from '../Assets/subjects.json';
 import { TaskView } from "../components/pages/TaskView";
 import { ErrorPage } from "../components/pages/Error";
 import { TheoryConstructor } from "../components/pages/TheoryConstructor";
+import { Schools } from "../components/pages/Schools";
+import { School } from "../components/pages/School";
 
 
 export interface IRoute {
@@ -30,6 +32,8 @@ export enum RoutesEnum {
     TASK_CONSTRUCTOR='/constructor/work',
     TASK_VIEW='/task/',
     RESOURCES='/resources',
+    SCHOOLS='/schools',
+    SCHOOL='/schools/:id',
 
     LOGIN='/login',
     REGISTER='/register',
@@ -49,6 +53,8 @@ export let PrivateRoutes: IRoute[] = [
     {path: RoutesEnum.TASK_CONSTRUCTOR, element: TaskConstructor},
     {path: RoutesEnum.TASK_VIEW, element: TaskView},
     {path: RoutesEnum.RESOURCES, element: Resources},
+    {path: RoutesEnum.SCHOOLS, element: Schools},
+    {path: RoutesEnum.SCHOOL, element: School},
     {path: RoutesEnum.ACCOUNT, element: UserAccount},
     {path: RoutesEnum.THEORY_CONSTRUCTOR, element: TheoryConstructor},
     {path: RoutesEnum.ERROR, element: ErrorPage}

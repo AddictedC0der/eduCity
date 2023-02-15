@@ -32,7 +32,6 @@ export class User {
 @ChildEntity()
 export class Parent extends User {
     @OneToMany(() => Student, child => child.Parent, {onDelete: 'SET NULL', nullable: true})
-    @JoinColumn()
     Children: Student[];
 }
 
@@ -43,12 +42,7 @@ export class Teacher extends User {
     @JoinTable()
     UserSubject: Subject[];
 
-    @ManyToMany(() => Class, cls => cls.ContainedTeachers)
-    @JoinTable()
-    UserClass: Class[];
-
     @OneToMany(() => Work, work => work.Author)
-    @JoinColumn()
     Works: Work[];
 }
 
@@ -58,10 +52,6 @@ export class Student extends User {
     @OneToOne(() => Stats, stats => stats.MasterUser, {nullable: true})
     @JoinColumn()
     UserStats: Stats;
-
-    @ManyToMany(() => Class, cls => cls.ContainedStudents, {onDelete: 'SET NULL', nullable: true})
-    @JoinTable()
-    UserClass: Class[];
 
     @ManyToOne(() => Parent, parent => parent.Children, {onDelete: 'SET NULL', nullable: true})
     Parent: Parent;

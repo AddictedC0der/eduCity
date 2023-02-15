@@ -17,3 +17,31 @@ export class AuthService {
         return $api.post('/auth/logout');
     }
 }
+
+
+export class UserService {
+    static async getAllStudents(): Promise<AxiosResponse> {
+        const response = $api.get('/user/get/students');
+        return response;
+    }
+
+    static async getAllTeachers(): Promise<AxiosResponse> {
+        const response = $api.get('/user/get/teachers');
+        return response;
+    }
+
+    static async getUserByName(userName: string): Promise<AxiosResponse> {
+        const response = $api.get(`/user/get/name/${userName}`);
+        return response;
+    }
+
+    static async getUserById(userId: number): Promise<AxiosResponse> {
+        const response = $api.get(`/user/get/id/${userId}`);
+        return response;
+    }
+
+    static async getAll(): Promise<AxiosResponse> {
+        const response = $api.get('/user/all');
+        return response;
+    }
+}
