@@ -1,14 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { ArrayContains, DeleteResult, Repository, UpdateResult } from "typeorm";
+import { ArrayContainedBy, ArrayContains, DeleteResult, Repository, UpdateResult } from "typeorm";
 import { ChatMessage } from "./entities/chat_message.entity";
 import { ChatMessageDto } from "./dto/chat_message.dto";
-import { User } from "../user/entities/user.entity";
+import { Student, Teacher, User } from "../user/entities/user.entity";
 import { Class } from "./entities/class.entity";
 import { CreateClassDto } from "./dto/class.dto";
 import { School } from "./entities/school.entity";
 import { UserService } from "../user/user.service";
 import { CreateSchoolDto } from "./dto/school.dto";
+import { Work } from "../work/entities/work.entity";
+import { WorkService } from "../work/work.service";
 
 
 @Injectable()
@@ -18,7 +20,7 @@ export class ChatService {
 
     async createMessage(messageDto: ChatMessageDto): Promise<ChatMessage> {
         const targetUser = await this.UserRepo.findOne({where: {id: messageDto.author}});
-        const targetMessage = await this.ChatMessageRepo.findOne({where: {id: messageDto.replyTo}})
+        const targetMessage = await this.ChatMessageRepo.findOne({where: {id: messageDto.replyTo}, relations: {author: true, replyTo: true}})
         const response = this.ChatMessageRepo.create({...messageDto, author: targetUser, replyTo: targetMessage});
         this.ChatMessageRepo.save(response);
         return response;
@@ -30,12 +32,13 @@ export class ChatService {
     }
 
     async editMessage(messageId: number, newValue: string): Promise<UpdateResult> {
-        const response = await this.ChatMessageRepo.update(messageId, {text: newValue, isEdited: true})
+        const targetMessage = await this.ChatMessageRepo.findOne({where: {id: messageId}});
+        const response = await this.ChatMessageRepo.update(messageId, {...targetMessage, text: newValue, isEdited: true})
         return response;
     }
 
     async getMessage(messageId): Promise<ChatMessage> {
-        const response = await this.ChatMessageRepo.findOne({where: {id: messageId}});
+        const response = await this.ChatMessageRepo.findOne({where: {id: messageId}, relations: {replyTo: true, author: true}});
         return response;
     }
 
@@ -95,21 +98,38 @@ export class SchoolService {
 
 export class ClassService {
     constructor(@InjectRepository(Class) private ClassRepo: Repository<Class>,
+                @InjectRepository(Student) private StudentRepo: Repository<Student>,
+                @InjectRepository(Teacher) private TeacherRepo: Repository<Teacher>,
+                private WorkService: WorkService,
                 private SchoolService: SchoolService,
                 private UserService: UserService) {}
 
     async create(classDto: CreateClassDto): Promise<Class> {
+        const targetSchool = await this.SchoolService.getSchoolById(classDto.School);
+        const targetStudents: Student[] = [];
+        const targetTeachers: Teacher[] = [];
+        for (let i = 0; i < classDto.ContainedStudents.length; i++) {
+            targetStudents.push(await this.UserService.getStudentById(classDto.ContainedStudents[i]));
+        }
+        for (let i = 0; i < classDto.ContainedTeachers.length; i++) {
+            targetTeachers.push(await this.UserService.getTeacherById(classDto.ContainedTeachers[i]));
+        }
+        const response = this.ClassRepo.create({...classDto, School: targetSchool, ContainedStudents: targetStudents, ContainedTeachers: targetTeachers});
+        await this.ClassRepo.save(response);
+        return response;
+    }
+
+    async update(classId: number, classDto: CreateClassDto) {
         const targetSchool = await this.SchoolService.getSchoolById(classDto.School);
         const targetStudents: User[] = [];
         const targetTeachers: User[] = [];
         for (let i = 0; i < classDto.ContainedStudents.length; i++) {
             targetStudents.push(await this.UserService.getUserById(classDto.ContainedStudents[i]));
         }
-        for (let i = 0; i < classDto.ContainedStudents.length; i++) {
+        for (let i = 0; i < classDto.ContainedTeachers.length; i++) {
             targetTeachers.push(await this.UserService.getUserById(classDto.ContainedTeachers[i]));
         }
-        const response = this.ClassRepo.create({...classDto, School: targetSchool, ContainedStudents: targetStudents, ContainedTeachers: targetTeachers});
-        await this.ClassRepo.save(response);
+        const response = this.ClassRepo.update(classId, {...classDto, School: targetSchool, ContainedStudents: targetStudents, ContainedTeachers: targetTeachers});
         return response;
     }
 
@@ -129,23 +149,48 @@ export class ClassService {
         return response;
     }
 
-    async addStudentToClass(classId: number, studentId: number) {
-        const targetUser = await this.UserService.getUserById(studentId);
-        const targetClass = await this.getClassById(classId);
-        const response = await this.ClassRepo.update(classId, {...targetClass, ContainedStudents: targetClass.ContainedStudents.concat([targetUser])});
-        return response;
+    async addStudentsToClass(classDeepPartial: Class, students: Student[]) {
+        console.log(students)
+        for (let i = 0; i < students.length; i++) {
+            const targetStudent = await this.StudentRepo.findOne({where: {id: students[i].id}, relations: ['Classes']});
+            await this.StudentRepo.update(targetStudent.id, {...targetStudent, Classes: targetStudent.Classes.concat([classDeepPartial])});
+        }
     }
 
-    async addTeacherToClass(classId: number, teacherId: number) {
-        const targetUser = await this.UserService.getUserById(teacherId);
+    async addTeachersToClass(classId: number, teacherId: number) {
+        const targetUser = await this.UserService.getUserById(teacherId) as Teacher;
         const targetClass = await this.getClassById(classId);
-        const response = await this.ClassRepo.update(classId, {...targetClass, ContainedStudents: targetClass.ContainedStudents.concat([targetUser])});
+        const response = await this.ClassRepo.update(classId, {...targetClass, ContainedTeachers: targetClass.ContainedTeachers.concat([targetUser])});
         return response;
     }
 
     async getUserClass(userId: number) {
-        const targetUser = await this.UserService.getUserById(userId);
-        const response = await this.ClassRepo.find({where: {ContainedStudents: ArrayContains([targetUser])}, relations: ['ContainedStudents', 'ContainedTeachers']});
+        const targetStudent = await this.UserService.getStudentById(userId);
+        const targetTeacher = await this.UserService.getTeacherById(userId);
+        let targetUser;
+        if (targetStudent) {
+            targetUser = targetStudent
+        } else if (targetTeacher) {
+            targetUser = targetTeacher
+        } else {
+            return;
+        }
+        const classes = await this.getAll();
+        const response: Class[] = [];
+        for (let i = 0; i < classes.length; i++) {
+            if (targetUser.Role === 'Student') {
+                const currentStudents = classes[i].ContainedStudents.find(student => student.id === targetUser.id)
+                if (currentStudents) {
+                    response.push(classes[i]);
+                }
+            } else if (targetUser.Role === 'Teacher') {
+                const currentTeachers = classes[i].ContainedTeachers.find(teacher => teacher.id === targetUser.id);
+                if (currentTeachers) {
+                    response.push(classes[i]);
+                }
+            }
+            
+        }
         return response;
     }
 
@@ -156,6 +201,22 @@ export class ClassService {
 
     async getClassbyName(className: string) {
         const response = await this.ClassRepo.findOne({where: {Name: className}})
+        return response;
+    }
+
+    async getClassWorks(classId: number) {
+        const response: Work[] = [];
+        const works = await this.WorkService.getAll();
+        const targetClass = await this.getClassById(classId);
+        console.log(targetClass)
+        console.log('______________')
+        console.log(works)
+        for (let i = 0; i < works.length; i++) {
+            const current = works[i].Classes.find(e => e.id === targetClass.id);
+            if (current) {
+                response.push(works[i]);
+            }
+        }
         return response;
     }
 

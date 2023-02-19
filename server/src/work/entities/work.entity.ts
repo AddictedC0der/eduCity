@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinTable, JoinColumn } from 'typeorm';
+import { Class } from '../../class/entities/class.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinTable, JoinColumn, ManyToMany } from 'typeorm';
 import { Subject } from '../../user/entities/subject.entity';
 import { Teacher, User } from '../../user/entities/user.entity';
 import { Solution } from './solution.entity';
@@ -16,7 +17,7 @@ export class Work {
     @Column()
     Name: string;
 
-    @ManyToOne(() => Teacher, teacher => teacher.Works)
+    @ManyToOne(() => Teacher, teacher => teacher.Works, {nullable: true, onDelete: 'SET NULL'})
     Author: Teacher;
 
     @Column()
@@ -39,6 +40,9 @@ export class Work {
 
     @Column()
     Privacy: string;
+
+    @ManyToMany(() => Class, classEntity => classEntity.ClassWorks, {nullable: true})
+    Classes: Class[];
 
     @OneToMany(() => Task, task => task.ParentWork)
     Tasks: Task[];

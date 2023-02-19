@@ -46,6 +46,8 @@ export function Schools() {
     }
 
     React.useEffect(() => {
+        document.title = 'Школы | EduCity';
+
         const fetchData = async () => {
             const data = await (await SchoolService.getAll()).data;
             setSchools(data);

@@ -33,7 +33,7 @@ function UserSection() {
     const navigate = useNavigate();
 
     return (
-        <Button onClick={() => navigate('/account')}>
+        <Button onClick={() => navigate(`/account/${user.user.id}`)}>
             <Grid container direction='column' alignItems='center' width='100%' aria-label='UserSectionMainGrid'>
                 <Grid item xs={4} aria-label='UserAvatarGrid'>
                     <Avatar></Avatar>

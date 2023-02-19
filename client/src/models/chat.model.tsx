@@ -7,3 +7,12 @@ export interface IChatMessage {
     replyTo: number;
     isEdited: boolean;
 }
+
+export interface IRealChatMessage {
+    text: string;
+    author: IUser;
+    sendTime: string;
+    replyTo: IRealChatMessage | null;
+    isEdited: boolean;
+    id: number;
+}

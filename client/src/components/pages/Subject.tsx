@@ -97,14 +97,6 @@ function TasksTab(props: TabProps) {
     //@ts-ignore
     const rows: GridRowsProp = list.map(e => {return {id: e.id, index: e.id, name: e.Name, author: 'Me', class: e.Class, difficulty: e.Difficulty}})
 
-    // const rows: GridRowsProp = [
-    //     {id: 1, index: '1', name: 'Demo1', author: 'Me', class: '8', difficulty: '4'},
-    //     {id: 2, index: '2', name: 'Demo2', author: 'Me', class: '2', difficulty: '2'},
-    //     {id: 3, index: '3', name: 'Demo3', author: 'Me', class: '10', difficulty: '9'},
-    //     {id: 4, index: '4', name: 'Demo4', author: 'Me', class: '4', difficulty: '10'},
-    //     {id: 5, index: '5', name: 'Demo5', author: 'Me', class: '6', difficulty: '1'},
-    // ]
-
     const handleClick: GridEventListener<'rowClick'> = (params, event, details) => {
         console.log(params)
         console.log(event)
@@ -128,6 +120,10 @@ function TasksTab(props: TabProps) {
 
 export function Subject() {
     const [tab, setTab] = React.useState(0);
+
+    React.useEffect(() => {
+        document.title = `${(location.state as {subject: string}).subject} | EduCity`;
+    }, [])
 
     const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
         setTab(newValue);

@@ -1,6 +1,6 @@
 import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab, FormControlLabel, List, ListItem, Paper, Step, StepLabel, Stepper, TextField, Typography } from '@mui/material';
 import * as React from 'react';
-import { IClass } from '../../models/class.model';
+import { IClass, IRealClass } from '../../models/class.model';
 import { ISchool, ISchoolDto } from '../../models/school.model';
 import { SchoolService } from '../../http/schoolAPI';
 import { IUser, IUserDto } from '../../models/user.model';
@@ -23,6 +23,8 @@ function AddTeachersPage(props: DialogPageProps) {
     const [teachers, setTeachers] = React.useState<IUser[]>(
         props.formData.ContainedTeachers.map(teacher => {return totalTeachers.find(e => e.id === teacher)!}));  // Teachers of type IUserDto that were added to list
     
+    console.log(teachers)
+
     React.useEffect(() => {
         const fetchData = async () => {
             const data = await (await UserService.getAllTeachers()).data;
@@ -30,6 +32,10 @@ function AddTeachersPage(props: DialogPageProps) {
         }
         fetchData();
     }, [])
+
+    React.useEffect(() => {
+        setTeachers(props.formData.ContainedTeachers.map(teacher => {return totalTeachers.find(e => e.id === teacher)!}));
+    }, [totalTeachers])
 
     const generateOptions = () => {
         return totalTeachers.map(teacher => {return teacher.UserLogin});
@@ -60,9 +66,9 @@ function AddTeachersPage(props: DialogPageProps) {
                 <List>
                     {
                         teachers.map(teacher => { return (
-                            <ListItem key={teacher.UserLogin}>
+                            <ListItem key={teacher?.UserLogin}>
                                 <Box sx={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly'}}>
-                                    <Typography sx={{width: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{teacher.UserLogin}</Typography>
+                                    <Typography sx={{width: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{teacher?.UserLogin}</Typography>
                                     <Fab size='small' onClick={() => handleRemoveStudent(teacher)}>
                                         <ClearIcon />
                                     </Fab>
@@ -93,7 +99,7 @@ function AddTeachersPage(props: DialogPageProps) {
 
 function AddStudentsPage(props: DialogPageProps) {
     const [search, setSearch] = React.useState<string>('');                     // Text typed in Autocomplete
-    const [selected, setSelected] = React.useState<string | null>('');      // Selected student in Autocomplete
+    const [selected, setSelected] = React.useState<string | null>(null);      // Selected student in Autocomplete
     const [totalStudents, setTotalStudents] = React.useState<IUser[]>([]);   // All existing students
     const [students, setStudents] = React.useState<IUser[]>(
         props.formData.ContainedStudents.map(student => {return totalStudents.find(e => e.id === student)!}));  // Students of type IUserDto that were added to list
@@ -151,7 +157,7 @@ function AddStudentsPage(props: DialogPageProps) {
                         sx={{width: '80%'}}
                         value={selected}
                         inputValue={search}
-                        onChange={(_, newValue) => setSelected(newValue ?? null)}
+                        onChange={(_, newValue) => setSelected(newValue)}
                         onInputChange={(_, newValue) => setSearch(newValue)}
                         options={generateOptions()}
                         renderInput={(params) => <TextField {...params} />} />
@@ -198,7 +204,7 @@ function MainSettingsPage(props: DialogPageProps) {
                     value={selected}
                     inputValue={search}
                     onInputChange={(_, newValue) => setSearch(newValue)}
-                    onChange={(_, newValue) => props.setFormData({type: 'setSchool', payload: schools.find(school => school.SchoolName === newValue)!.id})}
+                    onChange={(_, newValue) => {props.setFormData({type: 'setSchool', payload: schools.find(school => school.SchoolName === newValue)!.id}); setSelected(newValue);}}
                     sx={{width: '100%'}} renderInput={(params) => <TextField {...params} />} />}
                 label='Школа' labelPlacement='start' />
         </div>
@@ -209,6 +215,7 @@ function MainSettingsPage(props: DialogPageProps) {
 interface CreateClassDialogProps {
     open: boolean;
     onClose: () => void;
+    dto?: IClass;
 }
 
 
@@ -218,10 +225,10 @@ export function CreateClassDialog(props: CreateClassDialogProps) {
     const steps = ['Общие настрйоки', 'Добавление учеников', 'Добавление учителей'];
 
     const initial: IClass = {
-        Name: '',
-        School: 0,
-        ContainedStudents: [],
-        ContainedTeachers: []
+        Name: props.dto?.Name ?? '',
+        School: props.dto?.School ?? 0,
+        ContainedStudents: props.dto?.ContainedStudents ?? [],
+        ContainedTeachers: props.dto?.ContainedTeachers ?? []
     }
 
     const formReducer = (state: IClass, action: {type: string, payload: any}) => {
@@ -267,6 +274,11 @@ export function CreateClassDialog(props: CreateClassDialogProps) {
         props.onClose();
     }
 
+    const handleEditClass = async () => {
+        const targetClass = await ClassService.getClassByName(props.dto!.Name);
+        ClassService.updateClass(targetClass.data.id, formData);
+    }
+
     const renderCurrentPage = () => {
         const pageProps: DialogPageProps = {formData: formData, setFormData: setFormData}
         switch(activeStep) {
@@ -306,11 +318,16 @@ export function CreateClassDialog(props: CreateClassDialogProps) {
             <DialogActions>
                     <Button disabled={activeStep <= 0 ? true : false} variant='contained' onClick={() => setActiveStep(activeStep - 1)}>Назад</Button>
                     <Button variant='contained' onClick={() => {
-                        if (activeStep >= steps.length) {
-                            handleCreateClass();
+                        if (activeStep >= steps.length - 1) {
+                            if (props.dto) {
+                                handleEditClass();
+                            } else {
+                                handleCreateClass();
+                            }
+                            
                         } else {
                             setActiveStep(activeStep + 1)
-                        }}}>{activeStep >= steps.length ? ' Создать' : 'Далее'}</Button>
+                        }}}>{activeStep >= steps.length - 1 ? ' Создать' : 'Далее'}</Button>
             </DialogActions>
         </Dialog>
     )

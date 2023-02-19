@@ -58,6 +58,7 @@ export function TheoryConstructor() {
     const [selection, setSelection] = React.useState(document.getSelection())
 
     React.useEffect(() => {
+        document.title = 'Конструктор теории | EduCity';
         console.log(selection?.toString())
     }, [selection])
 

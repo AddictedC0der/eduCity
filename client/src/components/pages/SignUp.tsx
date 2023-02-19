@@ -19,6 +19,10 @@ export default function SignUp() {
     const { register } = useActions();
     const navigate = useNavigate()
 
+    React.useEffect(() => {
+        document.title = 'Регистрация | EduCity';
+    }, [])
+
     const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget)

@@ -1,8 +1,8 @@
-import { IChatMessage } from "../../../models/chat.model";
+import { IChatMessage, IRealChatMessage } from "../../../models/chat.model";
 
 
 export interface IChatState {
-    messages: IChatMessage[];
+    messages: IRealChatMessage[];
     isLoading: boolean;
     error: string;
 }

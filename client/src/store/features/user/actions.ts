@@ -20,6 +20,7 @@ export const UserActionCreator = {
             console.log('Loading set!')
             const { data } = await AuthService.login(login, password);
             console.log('Data got!')
+            console.log(data)
             localStorage.setItem('token', data.tokens.accessToken);
             dispatch(UserActionCreator.SetUserAction({user: data.user, stats: data.user.UserStats}));
             dispatch(UserActionCreator.SetAuthAction(true))

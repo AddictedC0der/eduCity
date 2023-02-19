@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToMany, JoinColumn, JoinTable } from "typeorm";
 import { School } from "./school.entity";
 import { Student, Teacher, User } from "../../user/entities/user.entity";
+import { Work } from "../../work/entities/work.entity";
 
 
 @Entity()
@@ -15,11 +16,15 @@ export class Class {
     @JoinColumn()
     School: School
 
-    @ManyToMany(() => User, {nullable: true})
+    @ManyToMany(() => Work, work => work.Classes, {nullable: true})
     @JoinTable()
-    ContainedStudents: User[];
+    ClassWorks: Work[];
 
-    @ManyToMany(() => User, {nullable: true})
+    @ManyToMany(() => Student, student => student.Classes, {nullable: true, eager: true})
     @JoinTable()
-    ContainedTeachers: User[];
+    ContainedStudents: Student[];
+
+    @ManyToMany(() => Teacher, teacher => teacher.Classes, {nullable: true, eager: true})
+    @JoinTable()
+    ContainedTeachers: Teacher[];
 }

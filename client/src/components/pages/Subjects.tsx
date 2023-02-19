@@ -32,6 +32,10 @@ const subjectsList = subjects.Groups.map(group => {return (
 
 
 export function Subjects() {
+    React.useEffect(() => {
+        document.title = 'Предметы | EduCity';
+    }, [])
+
     return (
         <MainLayout paddingMain='ALL'>
             <Grid container direction='column' sx={{width: '100%'}} aria-label='SubjectsMainGrid'>

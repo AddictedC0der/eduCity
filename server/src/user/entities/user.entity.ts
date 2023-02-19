@@ -44,6 +44,9 @@ export class Teacher extends User {
 
     @OneToMany(() => Work, work => work.Author)
     Works: Work[];
+
+    @ManyToMany(() => Class, classEntity => classEntity.ContainedTeachers)
+    Classes: Class[];
 }
 
 
@@ -55,5 +58,8 @@ export class Student extends User {
 
     @ManyToOne(() => Parent, parent => parent.Children, {onDelete: 'SET NULL', nullable: true})
     Parent: Parent;
+
+    @ManyToMany(() => Class, classEntity => classEntity.ContainedStudents)
+    Classes: Class[];
 }
 

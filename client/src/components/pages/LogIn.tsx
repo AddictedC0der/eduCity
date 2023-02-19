@@ -3,9 +3,16 @@ import { Box, Typography, Paper, Container, CssBaseline, TextField, Button, Link
 import { useActions } from '../../hooks/useActions';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { IUserLogin } from '../../models/user.model';
+import { PasswordRestoreDialog } from '../dialogs/PasswordRestore';
 
 
 export function LogIn() {
+    const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+    
+    React.useEffect(() => {
+        document.title = 'Вход в аккаунт | EduCity';
+    }, [])
+
     const { login } = useActions()
     const navigate = useNavigate();
 
@@ -44,6 +51,7 @@ export function LogIn() {
                             name='password'
                             type='password'
                             autoComplete='password' />
+                        <Button>Забыли пароль?</Button>
                         <Button type='submit' variant='contained' fullWidth>Войти</Button>
                         <Link onClick={() => navigate('../register')}>Нет аккаунта?</Link>
                     </Box>

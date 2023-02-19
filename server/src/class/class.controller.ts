@@ -5,6 +5,7 @@ import { ChatMessageDto } from "./dto/chat_message.dto";
 import { CreateClassDto } from "./dto/class.dto";
 import { ChatMessage } from "./entities/chat_message.entity";
 import { CreateSchoolDto } from "./dto/school.dto";
+import { Class } from "./entities/class.entity";
 
 
 @ApiTags('Chat')
@@ -64,6 +65,14 @@ export class ClassController {
         return response;
     }
 
+    @ApiOperation({summary: 'Updates existing class.'})
+    @ApiResponse({status: 200})
+    @Put('/update/:id')
+    async updateClass(@Param('id') classId, @Body() classDto: CreateClassDto) {
+        const response = this.ClassService.update(classId, classDto);
+        return response;
+    }
+
     @ApiOperation({summary: 'Deletes existing class.'})
     @ApiResponse({status: 200})
     @Delete('/:id')
@@ -92,20 +101,20 @@ export class ClassController {
     @ApiResponse({status: 200})
     @Put('/newStudent/:id')
     async addStudentToClass(@Param('id') classId: number, @Body() newStudent: number) {
-        const response = this.ClassService.addStudentToClass(classId, newStudent);
-        return response;
+        // const response = this.ClassService.addStudentToClass(classId, newStudent);
+        // return response;
     }
 
     @ApiOperation({summary: 'Adds new teacher to class ContainedTeachers.'})
     @ApiResponse({status: 200})
     @Put('/newTeacher/:id')
     async addTeacherToClass(@Param('id') classId: number, @Body() newTeacher: number) {
-        const response = this.ClassService.addTeacherToClass(classId, newTeacher);
-        return response;
+        // const response = this.ClassService.addTeacherToClass(classId, newTeacher);
+        // return response;
     }
     
     @ApiOperation({summary: 'Gets class by ID.'})
-    @ApiResponse({status: 200, type: ChatMessage})
+    @ApiResponse({status: 200, type: Class})
     @Get('/get/user/:id')
     async getUserClass(@Param('id') userId: number) {
         const response = this.ClassService.getUserClass(userId);
@@ -113,7 +122,7 @@ export class ClassController {
     }
 
     @ApiOperation({summary: 'Gets class by ID.'})
-    @ApiResponse({status: 200, type: ChatMessage})
+    @ApiResponse({status: 200, type: Class})
     @Get('/get/id/:id')
     async getClassById(@Param('id') classId: number) {
         const response = this.ClassService.getClassById(classId);
@@ -121,7 +130,7 @@ export class ClassController {
     }
 
     @ApiOperation({summary: 'Gets class by name.'})
-    @ApiResponse({status: 200, type: ChatMessage})
+    @ApiResponse({status: 200, type: Class})
     @Get('/get/name/:name')
     async getClassByName(@Param('name') className: string) {
         const response = this.ClassService.getClassbyName(className);
@@ -129,7 +138,15 @@ export class ClassController {
     }
 
     @ApiOperation({summary: 'Gets all messages.'})
-    @ApiResponse({status: 200, type: ChatMessage})
+    @ApiResponse({status: 200, type: Class})
+    @Get('/get/works/:id')
+    async getClassWorks(@Param('id') classId: number) {
+        const response = this.ClassService.getClassWorks(classId);
+        return response
+    }
+
+    @ApiOperation({summary: 'Gets all messages.'})
+    @ApiResponse({status: 200, type: Class})
     @Get('/all')
     async getAll() {
         const response = this.ClassService.getAll();

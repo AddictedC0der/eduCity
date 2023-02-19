@@ -1,12 +1,12 @@
 import { createAction } from "@reduxjs/toolkit";
 import { ChatService } from "../../../http/chatAPI";
-import { IChatMessage } from '../../../models/chat.model';
+import { IChatMessage, IRealChatMessage } from '../../../models/chat.model';
 import { AppDispatch } from "../../index";
 import * as types from "./types";
 
 
 export const ChatActionCreator = {
-    SetMessagesAction: createAction<IChatMessage[]>(types.ChatActionEnum.SET_MESSAGES),
+    SetMessagesAction: createAction<IRealChatMessage[]>(types.ChatActionEnum.SET_MESSAGES),
     SetLoadingAction: createAction<boolean>(types.ChatActionEnum.SET_LOADING),
     SetErrorAction: createAction<string>(types.ChatActionEnum.SET_ERROR),
 
@@ -26,7 +26,7 @@ export const ChatActionCreator = {
 
     createMessage: (messageDto: IChatMessage) => async (dispatch: AppDispatch) => {
         try {
-            await ChatService.createMessage(messageDto);
+            return await ChatService.createMessage(messageDto);
         } catch(error: any) {
             dispatch(ChatActionCreator.SetErrorAction(error.message));
             console.log(error);
@@ -34,7 +34,13 @@ export const ChatActionCreator = {
     },
 
     editMessage: (messageId: number, newValue: string) => async (dispatch: AppDispatch) => {
-        await ChatService.editMessage(messageId, newValue);
+        try {
+            await ChatService.editMessage(messageId, newValue);
+        } catch(error: any) {
+            dispatch(ChatActionCreator.SetErrorAction(error.message));
+            console.log(error);
+        }
+        
     },
 
     deleteMessage: (messageId: number) => async (dispatch: AppDispatch) => {

@@ -114,6 +114,7 @@ export function TaskView() {
         const fetchData = async () => {
             const data = await ConstructorService.getWorkById(query.get('id')!);
             setWork(data.data);
+            document.title = `${data.data.Name} | EduCity`;
         }
         fetchData();
     }, [])

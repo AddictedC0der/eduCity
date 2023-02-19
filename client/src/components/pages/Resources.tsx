@@ -19,6 +19,10 @@ const rows: GridRowsProp = [
 export function Resources() {
     const [dialogOpen, setDialogOpen] = React.useState<boolean>(false);
     
+    React.useEffect(() => {
+        document.title = 'Ресурсы | EduCity';
+    }, [])
+
     const openDialog = () => {
         setDialogOpen(true);
     }

@@ -11,6 +11,10 @@ export function School() {
     const data = (location.state as {school: IRealSchool}).school;
     const user = useTypedSelector(state => state.user);
 
+    React.useEffect(() => {
+        document.title = `${data.SchoolName} | EduCity`
+    }, [])
+
     const isAdmin = data.Admins.find(admin => admin.id === user.user.user.id) ? true : false;
 
     const handleNavigateToSite = (link: string) => {

@@ -7,7 +7,7 @@ import { RoutesEnum } from '../../router';
 
 function ResourcesBlock(props: {title: string, link: string}) {
     const navigate = useNavigate()
-
+    
     return (
         <Button onClick={() => navigate(props.link)} sx={{backgroundColor: 'rgb(200, 80, 20)', color: 'white', width: '80%', height: '20vh',
             display: 'flex', justifyContent: 'center', alignItems: 'center',
@@ -19,6 +19,10 @@ function ResourcesBlock(props: {title: string, link: string}) {
 
 
 export function MainPage() {
+    React.useEffect(() => {
+        document.title = 'Главная | EduCity'
+    }, [])
+
     return (
         <MainLayout paddingMain='ALL'>
             <Grid container direction='row' alignItems='center' justifyContent='center' height='80vh' width='100%'

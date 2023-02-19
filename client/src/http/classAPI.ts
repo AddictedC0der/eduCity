@@ -10,7 +10,11 @@ export class ClassService {
         return response;
     }
 
-
+    static async updateClass(classId: number, classDto: IClass): Promise<AxiosResponse> {
+        const response = $api.put(`/class/update/${classId}`, {...classDto});
+        return response;
+    }
+    
     static async deleteClass(classId: number): Promise<AxiosResponse> {
         const response = $api.delete(`/class/${classId}`);
         return response
@@ -22,12 +26,17 @@ export class ClassService {
     }
 
     static async getClassByName(className: string): Promise<AxiosResponse> {
-        const response = $api.get(`/class/name/${className}`);
+        const response = $api.get(`/class/get/name/${className}`);
         return response;
     }
 
     static async getAll(): Promise<AxiosResponse> {
         const response = $api.get(`/class/all`);
+        return response;
+    }
+
+    static async getClassWorks(classId: number): Promise<AxiosResponse> {
+        const response = $api.get(`/class/get/works/${classId}`);
         return response;
     }
 

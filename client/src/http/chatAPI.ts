@@ -5,8 +5,6 @@ import { $api } from ".";
 
 export class ChatService {
     static async createMessage(message: IChatMessage): Promise<AxiosResponse> {
-        console.log('Sending')
-        console.log(message)
         return $api.post('/chat/create', {...message, author: message.author.id});
     }
     static async editMessage(messageId: number, newValue: string): Promise<AxiosResponse> {
@@ -20,7 +18,6 @@ export class ChatService {
 
     static async getMessages(): Promise<AxiosResponse> {
         const response = $api.get(`/chat/all`);
-        console.log(response)
         return response;
     }
 

@@ -153,6 +153,16 @@ export class UserService {
         return response;
     }
 
+    async getStudentById(userId: number) {
+        const response = await this.StudentRepo.findOne({where: {id: userId}});
+        return response;
+    }
+
+    async getTeacherById(userId: number) {
+        const response = await this.TeacherRepo.findOne({where: {id: userId}});
+        return response;
+    }
+
     async getAll(): Promise<User[]> {
         const response = await this.UserRepo.find();
         return response;

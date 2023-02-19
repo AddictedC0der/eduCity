@@ -37,7 +37,7 @@ export enum RoutesEnum {
 
     LOGIN='/login',
     REGISTER='/register',
-    ACCOUNT='/account',
+    ACCOUNT='/account/:id',
     ERROR='*'
 }
 

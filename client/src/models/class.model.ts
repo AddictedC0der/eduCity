@@ -9,6 +9,7 @@ export interface IClass {
 
 
 export interface IRealClass {
+    id: number;
     Name: string;
     School: number;
     ContainedStudents: IUser[];

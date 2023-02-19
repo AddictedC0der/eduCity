@@ -1,4 +1,4 @@
-import { Typography, Grid, Box, Paper, List, ListItemButton, Avatar, Drawer, ListItemIcon, ListItemText, IconButton, ListItem, TextField, Button, Autocomplete, Divider } from '@mui/material';
+import { Typography, Grid, Box, Paper, List, ListItemButton, Avatar, Drawer, ListItemIcon, ListItemText, IconButton, ListItem, TextField, Button, Autocomplete, Divider, Fab, Menu, MenuItem, Tabs, Tab } from '@mui/material';
 import * as React from 'react';
 import { MainLayout } from '../layouts/MainLayout';
 import { Chat } from '../complex/Chat';
@@ -10,46 +10,54 @@ import { ClassService } from '../../http/classAPI';
 import { IClass, IRealClass } from '../../models/class.model';
 import { IUser, IUserDto } from '../../models/user.model';
 import { CreateClassDialog } from '../dialogs/CreateClass';
+import { AreYouSureDialog } from '../dialogs/AreYouSure';
+import { useNavigate } from 'react-router-dom';
+import { RoutesEnum } from '../../router';
+import { UserService } from '../../http/userAPI';
+import { TasksTable } from '../complex/TasksTable';
 
 
-interface DrawerListOption {
-    icon: React.ReactNode;
-    title: string;
+interface MyClassProps {
+    classes: IRealClass[];
+    user: IUser;
 }
 
-const toolbarOptions: DrawerListOption[] = [
-    {title: 'Все задания', icon: <AssignmentIcon />},
-    {title: 'Покинуть класс', icon: <ExitToAppIcon />}
-]
 
-
-function DrawerList(options: DrawerListOption[]) {
+function RenderClassesList(props: {classes: IRealClass[], changeClass: React.Dispatch<React.SetStateAction<number>>;}) {
     return (
-        <List>
-        {options.map(option => {return (
-            <ListItemButton key={option.title}>
-                <ListItemIcon>{option.icon}</ListItemIcon>
-                <ListItemText primary={option.title} />
-            </ListItemButton>
-        )})}
-        </List>
+        <>
+        {
+            props.classes.map((e, index) => {return (
+                <ListItem key={e.Name} sx={{display: 'flex', justifyContent: 'center'}}>
+                    <Fab onClick={() => props.changeClass(index)}>{e.Name}</Fab>
+                </ListItem>
+            )})
+        }
+        </>
     )
 }
 
 
-interface MyClassProps {
-    class: IRealClass;
-}
-
-
 function RenderMembersList(props: {members: IUser[]}) {
+    const [anchor, setAnchor] = React.useState<HTMLElement | null>(null);
+    const open = Boolean(anchor);
+
+    const navigate = useNavigate()
+
+    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchor(event.currentTarget);
+    }
+
+    const handleCloseMenu = () => {
+        setAnchor(null);
+    }
+
     const renderTeachersList = () => {
         return (
-            props.members.map(member => {
-                return (
+            props.members.map(member => {return (
                     member.Role === 'Teacher' ?
                     <ListItem key={member.UserLogin}>
-                        <Typography>{member.UserLogin}</Typography>
+                        <Button id={member.id.toString()} sx={{width: '100%'}} onClick={handleOpenMenu}>{member.UserLogin}</Button>
                     </ListItem> : null
                 )
             })
@@ -62,10 +70,41 @@ function RenderMembersList(props: {members: IUser[]}) {
                 return (
                     member.Role === 'Student' ?
                     <ListItem key={member.UserLogin}>
-                        <Typography>{member.UserLogin}</Typography>
+                        <Button id={member.id.toString()} sx={{width: '100%'}} onClick={handleOpenMenu}>{member.UserLogin}</Button>
                     </ListItem> : null
                 )
             })
+        )
+    }
+
+    const redirectToProfile = (user: IUser) => {
+        navigate(`/account/${user.id}`, {state: {user: user}})
+    }
+
+    const renderMenuOptions = () => {
+        const fetchData = async (func: any) => {
+            const id = anchor?.id
+            if (id) {
+                const targetUser = await (await UserService.getUserById(parseInt(id))).data
+                func(targetUser);
+            }
+            return;
+        }
+
+        const decorator = (func: any) => {
+            fetchData(func).then(() => {
+                setAnchor(null);
+            })
+        }
+
+        const options = [
+            {label: 'Профиль', func: () => decorator(redirectToProfile), id: '1'}
+        ]
+
+        return (
+            options.map(option => {return (
+                <MenuItem key={option.id} onClick={option.func}>{option.label}</MenuItem>
+            )})
         )
     }
 
@@ -74,33 +113,98 @@ function RenderMembersList(props: {members: IUser[]}) {
         {renderStudentsList()}
         <Divider />
         {renderTeachersList()}
+        <Menu
+            id="basic-menu"
+            anchorEl={anchor}
+            open={open}
+            onClose={handleCloseMenu}
+            MenuListProps={{
+            'aria-labelledby': 'basic-button',
+            }}
+        >
+            {renderMenuOptions()}
+        </Menu>
+        </>
+    )
+}
+
+
+function TabPanel(props: {value: number, index: number, children?: React.ReactNode}) {
+    return (
+        <>
+        {props.value === props.index && (
+            <>
+            {props.children}
+            </>
+        )}
         </>
     )
 }
 
 
 function MyClass(props: MyClassProps) {
+    const [currentClass, setCurrentClass] = React.useState<number>(0);
+    const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
+    const [currentTab, setCurrentTab] = React.useState<number>(0);
 
-    console.log(props)
+    const convertToClass = (realClass: IRealClass) => {
+        const response: IClass = {...realClass, ContainedStudents: [], ContainedTeachers: []};
+        realClass.ContainedStudents.map(e => response.ContainedStudents.push(e.id));
+        realClass.ContainedTeachers.map(e => response.ContainedTeachers.push(e.id));
+        return response;
+    }
 
+    const handleDeleteClass = async () => {
+        const targetClass = await ClassService.getClassByName(props.classes[currentClass].Name);
+        ClassService.deleteClass(targetClass.data.id);
+    }
+
+    const renderControlPanel = () => {
+        if (props.user.Role === 'Teacher') {
+            return (
+                <>
+                <Button variant='contained' onClick={() => setOpenDialog(true)}>Редактировать класс</Button>
+                <Button sx={{backgroundColor: 'red', marginLeft: '3%'}} variant='contained' onClick={() => setOpenDeleteDialog(true)}>Удалить класс</Button>
+                </>
+            )
+        }
+    }
+    
     return (
         <Grid container direction='row' width='100%' height='80vh'>
-            {/* <Grid item>
-                <Drawer open={drawersOpen.toolbar}>
-                    <>
-                        <IconButton><MenuIcon /></IconButton>
-                    </>
-                    {DrawerList(toolbarOptions)}
-                </Drawer>
-            </Grid> */}
-            <Grid item xs sx={{height: '100%'}}>
-                <Chat />
-            </Grid>
-            <Grid item xs={1} sx={{backgroundColor: 'blue', height:'100%'}}>
+            <Grid item xs={1} justifyContent='center'>
+                <Typography sx={{display: 'flex', justifyContent: 'center'}}>Классы</Typography>
                 <List>
-                    <RenderMembersList members={props.class.ContainedStudents.concat(props.class.ContainedTeachers)} />
+                    <RenderClassesList classes={props.classes} changeClass={setCurrentClass} />
                 </List>
             </Grid>
+            <Grid item xs sx={{height: '100%'}}>
+                {renderControlPanel()}
+                <Tabs value={currentTab} onChange={(_, newValue: number) => setCurrentTab(newValue)}>
+                    <Tab label='Чат' />
+                    <Tab label='Задания' />  
+                </Tabs>
+                <TabPanel index={0} value={currentTab}>
+                    <Chat />
+                </TabPanel>
+                <TabPanel index={1} value={currentTab}>
+                    <TasksTable masterClass={props.classes[currentClass]} />
+                </TabPanel>
+            </Grid>
+            <Grid item xs={1} sx={{height:'100%'}}>
+                <Typography sx={{display: 'flex', justifyContent: 'center'}}>Участники</Typography>
+                <List sx={{overflow: 'auto', maxHeight: '100%', height: '100%'}}>
+                    <RenderMembersList members={props.classes[currentClass].ContainedStudents.concat(props.classes[currentClass].ContainedTeachers)} />
+                </List>
+            </Grid>
+            <CreateClassDialog open={openDialog} onClose={() => setOpenDialog(false)} dto={convertToClass(props.classes[currentClass])} />
+            <AreYouSureDialog
+                open={openDeleteDialog}
+                onClose={() => setOpenDeleteDialog(false)}
+                onSubmit={handleDeleteClass}
+                content='Вы уверены, что хотите удалить класс?'
+                title='Внимание!' />
         </Grid>
     )
 }
@@ -129,7 +233,7 @@ function FindClass(props: FindClassProps) {
     }, [])
 
     const renderCreateArea = () => {
-        if (props.user.Role === 'Student') {
+        if (props.user.Role === 'Teacher') {
             return (
                 <Box sx={{width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
                     <Typography variant='h5'>Не нашли нужный класс? Создайте новый!</Typography>
@@ -154,19 +258,18 @@ function FindClass(props: FindClassProps) {
 
 
 export function MyClassPage() {
-    const [drawersOpen, setDrawersOpen] = React.useState({
-        toolbar: true,
-        members: false
-    })
     const [component, setComponent] = React.useState<JSX.Element>();
 
     const { user } = useTypedSelector(state => state.user);
 
     React.useEffect(() => {
+        document.title = 'Мой класс | EduCity';
+
         const fetchData = async () => {
             const data = await (await ClassService.findUserClass(user.user.id)).data;
+            console.log(data);
             if (data.length) {
-                setComponent(<MyClass class={data[0]} />);
+                setComponent(<MyClass classes={data} user={user.user} />);
                 return data;
             }
             setComponent(<FindClass user={user.user} />);

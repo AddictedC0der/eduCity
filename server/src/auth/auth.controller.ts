@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Req, UseGuards, Request, Response, Res, Body, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Get, Req, UseGuards, Request, Response, Res, Body, UsePipes, ValidationPipe, Param } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { User } from '../user/entities/user.entity';
@@ -30,7 +30,7 @@ export class AuthController {
         response.cookie('refreshToken', data.tokens.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true});
         return data;
     }
-
+    
     @ApiOperation({summary: 'Log out user'})
     @ApiResponse({status: 201, description: 'User has been successfully logged out.'})
     @UsePipes(ValidationPipe)
@@ -50,6 +50,27 @@ export class AuthController {
         const { refreshToken } = request.cookies;
         const data = await this.authService.refresh(refreshToken);
         response.cookie('refreshToken', data.tokens.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true});
+        return data;
+    }
+
+    @ApiOperation({summary: 'Log out user'})
+    @ApiResponse({status: 201, description: 'User has been successfully logged out.'})
+    @UsePipes(ValidationPipe)
+    @Post(`/changePassword/:id`)
+    async changePassword(@Param('id') userId: number, @Body() passwords: {old: string, new: string}) {
+        // const { refreshToken } = request.cookies;
+        const data = await this.authService.changePassword(userId, passwords);
+        // response.clearCookie('refreshToken');
+        return data;
+    }
+    @ApiOperation({summary: 'Log out user'})
+    @ApiResponse({status: 201, description: 'User has been successfully logged out.'})
+    @UsePipes(ValidationPipe)
+    @Post(`/changePassword/noValidation/:id`)
+    async changePasswordWithoutValidation(@Param('id') userId: number, @Body() password: string) {
+        // const { refreshToken } = request.cookies;
+        const data = await this.authService.changePasswordWithoutValidation(userId, password);
+        // response.clearCookie('refreshToken');
         return data;
     }
 }

@@ -11,10 +11,10 @@ export class Solution {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Stats, stats => stats.Solutions)
+    @ManyToOne(() => Stats, stats => stats.Solutions, {onDelete: 'CASCADE'})
     Author: Stats;
 
-    @ManyToOne(() => Work, work => work.Solutions)
+    @ManyToOne(() => Work, work => work.Solutions, {onDelete: 'CASCADE'})
     Work: Work;
 
     @Column({

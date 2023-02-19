@@ -30,6 +30,7 @@ export class TokenService {
 
     async setToken(userId: number, token: string) {
         const data = await this.UserRepo.findOne({where: {id: userId}, relations: {Token: true}});
+        console.log(data);
         if (data.Token) {
             const response = await this.TokenRepo.update({id: data.Token.id}, {...data.Token, refreshToken: token});
             return response;
@@ -64,14 +65,14 @@ export class AuthService {
     
     async validateUser(login: string, password: string) {
         const user = (await this.userService.getUserByName(login))[0];
-        if (user && await bcrypt.compare(password, user.UserPassword)) {
+        const comparison = await bcrypt.compare(password, user.UserPassword)
+        if (user && comparison) {
             return user;
         }
         return null;
     }
 
     async login(user: any): Promise<any> {
-        console.log('Logging...')
         const validated_user = await this.validateUser(user.login, user.password);
         const tokens = await this.tokenService.createToken(validated_user);
         await this.tokenService.setToken(validated_user.id, tokens.refreshToken);
@@ -116,9 +117,26 @@ export class AuthService {
         if (!user_candidate || !is_in_db) {
             throw new UnauthorizedException({message: 'User is not authorized.'});
         }
-        const user = await this.userService.getUserById(user_candidate.id);
+        //@ts-ignore
+        const user = await this.userService.getUserById(user_candidate.sub);
         const tokens = await this.tokenService.createToken(user);
         await this.tokenService.setToken(user.id, tokens.refreshToken);
         return {user: user, tokens: tokens};
+    }
+
+    async changePassword(userId: number, passowrds: {old: string, new: string}) {
+        const hash = await bcrypt.hash(passowrds.old, 10);
+        const targetUser = await this.userService.getUserById(userId);
+        if (hash === targetUser.UserPassword) {
+            const response = await this.userService.updateUser(userId, {...targetUser, UserPassword: passowrds.new})
+            return response
+        }
+        return null;
+    }
+
+    async changePasswordWithoutValidation(userId: number, passowrd: string) {
+        const targetUser = await this.userService.getUserById(userId);
+        const response = await this.userService.updateUser(userId, {...targetUser, UserPassword: passowrd})
+        return response
     }
 }
