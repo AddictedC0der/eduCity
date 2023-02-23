@@ -19,8 +19,8 @@ export class CreateSolutionDto {
     readonly Work: number;
 
     @ApiProperty({example: '85', description: 'Rating of the solution (in relation to 100).'})
-    @IsNumber()
-    readonly Rating: number;
+    @IsString()
+    readonly Rating: string;
 }
 
 

@@ -228,7 +228,7 @@ export function Chat() {
     return (
         <Paper elevation={5} sx={{height: '100%'}} aria-label='chatPaper'>
             <List sx={{height: '80%', maxHeight: '80%', overflow: 'auto'}}>
-                {msgs.map(msg => {return (<ChatMessage message={msg} userId={user.user.id} onEditStart={startEditing} onReply={replyMessage} />)})}
+                {msgs.map(msg => {return (<ChatMessage key={msg.id} message={msg} userId={user.user.id} onEditStart={startEditing} onReply={replyMessage} />)})}
             </List>
             <div style={{padding: '1%'}}>
                 <ChatInputBox

@@ -7,7 +7,7 @@ import { ChatController, ClassController, SchoolController } from './class.contr
 import { ChatService, ClassService, SchoolService } from './class.service';
 import { Parent, Student, Teacher, User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
-import { Stats } from '../user/entities/stats.entity';
+import { StudentStats } from '../user/entities/stats.entity';
 import { Subject } from '../user/entities/subject.entity';
 import { TaskService, WorkService } from '../work/work.service';
 import { Work } from '../work/entities/work.entity';
@@ -15,7 +15,7 @@ import { Task } from '../work/entities/task.entity';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Class, School, ChatMessage, User, Student, Parent, Teacher, Stats, Subject, Work, Task])],
+  imports: [TypeOrmModule.forFeature([Class, School, ChatMessage, User, Student, Parent, Teacher, StudentStats, Subject, Work, Task])],
   controllers: [ChatController, ClassController, SchoolController],
   providers: [ChatService, ClassService, SchoolService, UserService, WorkService, TaskService],
   exports: [TypeOrmModule]

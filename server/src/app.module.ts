@@ -7,7 +7,7 @@ import { DataSource } from 'typeorm';
 import { User, Teacher, Student, Parent } from './user/entities/user.entity'
 import { Class } from './class/entities/class.entity'; 
 import { School } from './class/entities/school.entity';
-import { Stats } from './user/entities/stats.entity';
+import { StudentStats } from './user/entities/stats.entity';
 import { Subject } from './user/entities/subject.entity';
 import { Work } from './work/entities/work.entity';
 import { Task } from './work/entities/task.entity';
@@ -33,7 +33,7 @@ import { Solution } from './work/entities/solution.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [User, Teacher, Student, Parent, Class, School, Stats, Subject, Work, Task, Token, ChatMessage, Solution],
+      entities: [User, Teacher, Student, Parent, Class, School, StudentStats, Teacher, Subject, Work, Task, Token, ChatMessage, Solution],
       synchronize: true,
       migrationsTableName: "migrations",
       // migrations: [myMigration1670034134209],

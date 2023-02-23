@@ -17,5 +17,6 @@ export interface IWork {
     Privacy: string;
     Difficulty: number;
     Class: number;
-    Tasks: ITask[]
+    Classes: number[];
+    Tasks: ITask[];
 }

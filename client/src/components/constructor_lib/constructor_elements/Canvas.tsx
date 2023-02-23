@@ -42,11 +42,11 @@ export function ConstructorCanvas(props: Types.CanvasProps) {
     const spawnComponent = (item: any, monitor: DropTargetMonitor) => {
         const tool = Constants.tools.find(element => element.id === item.id);
         if (tool) {
-            const boundries = ((canvasRef.current as unknown) as HTMLElement).getBoundingClientRect();
+            const boundries = ((props.canvasRef.current as unknown) as HTMLElement).getBoundingClientRect();
             const dropPos = monitor.getClientOffset() ?? {x: boundries.x, y: boundries.y};
             const position = {X: dropPos.x - boundries.x, Y: dropPos.y - boundries.y};
             
-            props.repo.createComponent(tool, canvasRef, position, 'I');
+            props.repo.createComponent(tool, props.canvasRef, position, 'I');
         }
     }
 

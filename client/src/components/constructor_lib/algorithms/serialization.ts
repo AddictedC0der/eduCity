@@ -42,11 +42,27 @@ export class Serializer {
         const response: ComponentsRepository = new ComponentsRepository(store);
         response.addPages();
         for (let i = 0; i < dump.tasks.length; i++) {
+            if (i > 0) {
+                console.log('shifting')
+                response.shiftPage(1);
+            }
+            console.log(response._store.getState())
             dump.tasks[i].elements.map(e => {
                 const tool = Constants.findToolById(e.type) as Types.ToolType;
                 response.createComponent(tool, parent, {X: e.properties.Base.X, Y: e.properties.Base.Y}, way, e.properties);
             })
+            
         }
+        response._store.setState(state => {return {...state, currentPage: 1}})
         return response;
+    }
+
+    deserializeTask(repo: ComponentsRepository, dump: PageJSON, way: 'I' | 'U'): ComponentsRepository {
+        repo.addPages();
+        dump.elements.map(e => {
+            const tool = Constants.findToolById(e.type) as Types.ToolType;
+            repo.createComponent(tool, parent, {X: e.properties.Base.X, Y: e.properties.Base.Y}, way, e.properties);
+        })
+        return repo;
     }
 }

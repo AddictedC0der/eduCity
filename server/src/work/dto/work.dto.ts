@@ -46,7 +46,11 @@ export class CreateWorkDto {
     @IsString({message: 'WorkPolicy must be string.'})
     readonly Privacy: string;
 
-    @ApiProperty({example: 'Public', description: 'Defines who can see and complete work.'})
+    @ApiProperty({example: '[5, 23, 51, 1]', description: 'Classes for which work was created.'})
+    @IsArray({message: 'WorkPolicy must be array.'})
+    readonly Classes: number[];
+
+    @ApiProperty({example: '<TASKS>', description: 'Tasks of the work.'})
     @IsArray({message: 'WorkPolicy must be array.'})
     readonly Tasks: any[];
 }

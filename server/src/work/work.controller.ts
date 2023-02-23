@@ -80,7 +80,15 @@ export class SolutionController {
     @ApiOperation({summary: 'Get all work solutions.'})
     @ApiResponse({status: 200, type: Solution})
     @Get('/get/work/:id')
-    getWorkSolutions(@Param('id') workId: number) {
-        return this.solutionService.getWorkSolutions(workId);
+    getWorkSolutions(@Param('id') solutionId: number) {
+        return this.solutionService.getWorkSolutions(solutionId);
     }
+
+    @ApiOperation({summary: 'Get all work solutions.'})
+    @ApiResponse({status: 200, type: Solution})
+    @Post('/assess/:id')
+    assessSolution(@Param('id') solutionId: number, @Body() mark: {mark: string}) {
+        return this.solutionService.assessSolution(solutionId, mark.mark);
+    }
+
 }

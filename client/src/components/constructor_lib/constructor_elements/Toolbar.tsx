@@ -42,13 +42,12 @@ function ToolIcon(props: ToolIconProps) {
 
 
 function PresetIcon(props: ToolIconProps & {changeRepo: any, contents: any, parent: any, store: any}) {
-    const serializer = new Serializer()
     const handleClick = () => {
-        props.changeRepo(serializer.deserialize(props.contents, props.parent, props.store, 'U'))
+        props.changeRepo(props.contents)
     }
 
     return (
-        <ListItem key={props.id} arial-label={`PresetIcon-${props.id}`}>
+        <ListItem arial-label={`PresetIcon-${props.id}`}>
             <TooltipWrapper title={props.tooltip} placement='right'>
                 <Button id={props.id} key={props.id} arial-label='PresetIconButton' onClick={handleClick}
                         sx={{width: '50%', backgroundColor: 'white', border: '3px solid #5CDB95', '&:hover': {backgroundColor: '#5CDB95'}, resize: 'both'}}>
@@ -91,7 +90,15 @@ function PresetsTab(props: TabProps & {changeRepo: (newRepo: any) => void, paren
         <div>
             {props.index === props.value && (
                 Presets.Presets.map(e => { return (
-                    <PresetIcon store={props.store} changeRepo={handleChangeRepo} parent={props.parent} contents={e.UI.Repo} tooltip={e.Name} id={e.Name} icon={Backpack} />
+                    <PresetIcon
+                        key={`${e.Name}`}
+                        store={props.store}
+                        changeRepo={handleChangeRepo}
+                        parent={props.parent}
+                        contents={e.UI.Repo}
+                        tooltip={e.Name}
+                        id={e.Name}
+                        icon={Backpack} />
                 )  
                 })
             )}

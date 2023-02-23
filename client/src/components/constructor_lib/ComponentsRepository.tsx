@@ -73,6 +73,15 @@ export class ComponentsRepository {
         }
     }
 
+    shiftPage(direction: number) {
+        const current = this._store.getState().currentPage;
+        this._store.setState(state => {
+            state.currentPage = current + direction
+            state.totalPages += direction > 0 ? direction : 0
+            return state;
+        });
+    }
+
     addComponent(component: Types.RepositoryElement) {
         this.addPages()
         this.repository[this._store.getState().currentPage - 1].push(component);

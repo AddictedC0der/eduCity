@@ -100,7 +100,7 @@ export class ClassService {
     constructor(@InjectRepository(Class) private ClassRepo: Repository<Class>,
                 @InjectRepository(Student) private StudentRepo: Repository<Student>,
                 @InjectRepository(Teacher) private TeacherRepo: Repository<Teacher>,
-                private WorkService: WorkService,
+                @InjectRepository(Work) private WorkRepo: Repository<Work>,
                 private SchoolService: SchoolService,
                 private UserService: UserService) {}
 
@@ -206,11 +206,8 @@ export class ClassService {
 
     async getClassWorks(classId: number) {
         const response: Work[] = [];
-        const works = await this.WorkService.getAll();
+        const works = await this.WorkRepo.find({relations: {Classes: true}});
         const targetClass = await this.getClassById(classId);
-        console.log(targetClass)
-        console.log('______________')
-        console.log(works)
         for (let i = 0; i < works.length; i++) {
             const current = works[i].Classes.find(e => e.id === targetClass.id);
             if (current) {

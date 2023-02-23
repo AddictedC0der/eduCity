@@ -17,4 +17,8 @@ export class SolutionService {
         const response = $api.get(`/solution/get/work/${workId}`);
         return response
     }
+    static async assessSolution(solutionId: number, fraction: string) {
+        const repsonse = $api.post(`/solution/assess/${solutionId}`, {mark: fraction});
+        return repsonse;
+    }
 }

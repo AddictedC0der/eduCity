@@ -15,6 +15,8 @@ import { ErrorPage } from "../components/pages/Error";
 import { TheoryConstructor } from "../components/pages/TheoryConstructor";
 import { Schools } from "../components/pages/Schools";
 import { School } from "../components/pages/School";
+import { WorkAnalysis } from "../components/pages/WorkAnalysis";
+import { SolutionCheck } from "../components/pages/SolutionCheck";
 
 
 export interface IRoute {
@@ -31,6 +33,8 @@ export enum RoutesEnum {
     THEORY_CONSTRUCTOR='/constructor/theory',
     TASK_CONSTRUCTOR='/constructor/work',
     TASK_VIEW='/task/',
+    WORK_ANALYSIS='/work/',
+    SOLUTION_CHECK='/solutions/:id',
     RESOURCES='/resources',
     SCHOOLS='/schools',
     SCHOOL='/schools/:id',
@@ -52,6 +56,8 @@ export let PrivateRoutes: IRoute[] = [
     {path: RoutesEnum.CLASS, element: MyClassPage},
     {path: RoutesEnum.TASK_CONSTRUCTOR, element: TaskConstructor},
     {path: RoutesEnum.TASK_VIEW, element: TaskView},
+    {path: RoutesEnum.WORK_ANALYSIS, element: WorkAnalysis},
+    {path: RoutesEnum.SOLUTION_CHECK, element: SolutionCheck},
     {path: RoutesEnum.RESOURCES, element: Resources},
     {path: RoutesEnum.SCHOOLS, element: Schools},
     {path: RoutesEnum.SCHOOL, element: School},

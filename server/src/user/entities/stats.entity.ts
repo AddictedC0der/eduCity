@@ -1,10 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, OneToMany } from 'typeorm';
-import { Student, User } from './user.entity';
+import { Student, Teacher, User } from './user.entity';
 import { Solution } from '../../work/entities/solution.entity';
+import { Work } from '../../work/entities/work.entity';
 
 
 @Entity()
-export class Stats {
+export class StudentStats {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -14,3 +15,16 @@ export class Stats {
     @OneToOne(() => Student, user => user.UserStats, {nullable: true, onDelete: 'CASCADE'})
     MasterUser: Student;
 }
+
+
+// @Entity()
+// export class TeacherStats {
+//     @PrimaryGeneratedColumn()
+//     id: number;
+
+//     @OneToMany(() => Solution, solution => solution.Author)
+//     Works: Work[];
+
+//     @OneToOne(() => Teacher, user => user.UserStats, {nullable: true, onDelete: 'CASCADE'})
+//     MasterUser: Teacher;
+// }

@@ -13,6 +13,8 @@ import { useConstructorStore } from '../../hooks/useConstructorStore';
 import { ComponentsRepository } from './ComponentsRepository';
 import AddIcon from '@mui/icons-material/Add';
 import { CreateWorkDialog } from '../dialogs/CreateWork';
+import { InterfaceJSON, PageJSON, Serializer } from './algorithms/serialization';
+import { CodeTable } from './Constants';
 
 
 
@@ -34,9 +36,12 @@ export function TaskConstructor() {
 
     const [componentsRepo, setComponentsRepo] = React.useState(new ComponentsRepository(store))
 
-    const changeCurrentRepo = (newRepo: any) => {
+    const serializer = new Serializer();
+
+    const changeCurrentRepo = (newRepo: InterfaceJSON) => {
         console.log('Called!')
-        setComponentsRepo(newRepo);
+        setComponentsRepo(serializer.deserializeTask(componentsRepo, {
+            elements: newRepo.tasks[0].elements.map(e => { return {properties: e.properties, type: e.type}})}, 'I'));
     }
 
 

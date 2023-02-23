@@ -3,16 +3,19 @@ import { Injectable } from "@nestjs/common";
 import { DeepPartial, DeleteResult, InsertResult, Repository, UpdateResult } from "typeorm";
 import { User, Student, Parent, Teacher } from './entities/user.entity';
 import { Subject } from "./entities/subject.entity";
-import { Stats } from "./entities/stats.entity";
+import { StudentStats } from "./entities/stats.entity";
 import { CreateUserDto, UpdateUserDto } from "./dto/user.dto";
-import { CreateStatsDto } from "./dto/stats.dto";
+import { CreateTeacherStatsDto, CreateStudentStatsDto } from "./dto/stats.dto";
 import { DataSource } from "typeorm";
 import { Solution } from "../work/entities/solution.entity";
 
 
-const defaultStats: CreateStatsDto = {
-    //@ts-ignore
-    Solutions: 0 as DeepPartial<Solution[]>,
+const defaultStudentStats: CreateStudentStatsDto = {
+    Solutions: []
+}
+
+const defaultTeacherStats: CreateTeacherStatsDto = {
+    Works: []
 }
 
 
@@ -77,7 +80,8 @@ export class UserService {
                 @InjectRepository(Student) private StudentRepo: Repository<Student>,
                 @InjectRepository(Parent) private ParentRepo: Repository<Parent>,
                 @InjectRepository(Teacher) private TeacherRepo: Repository<Teacher>,
-                @InjectRepository(Stats) private StatsRepo: Repository<Stats>,
+                @InjectRepository(StudentStats) private StudentStatsRepo: Repository<StudentStats>,
+                // @InjectRepository(TeacherStats) private TeacherStatsRepo: Repository<TeacherStats>,
                 @InjectRepository(Subject) private SubjectRepo: Repository<Subject>) {}
 
     async createUser(userDto: CreateUserDto): Promise<any> {
@@ -86,11 +90,21 @@ export class UserService {
             case 'Student': {
                 response.user = this.StudentRepo.create({...userDto});
                 await this.StudentRepo.save(response.user);
+                
+                response.stats = this.StudentStatsRepo.create(defaultStudentStats);
+                response.stats.MasterUser = response.user;
+                await this.StudentStatsRepo.save(response.stats);
+                
                 break;
             }
             case 'Teacher': {
                 response.user = this.TeacherRepo.create(userDto);
                 await this.TeacherRepo.save(response.user);
+                
+                // response.stats = this.TeacherStatsRepo.create(defaultTeacherStats);
+                // response.stats.MasterUser = response.user;
+                // await this.TeacherStatsRepo.save(response.stats);
+
                 break;
             }
             case 'Parent': {
@@ -99,9 +113,7 @@ export class UserService {
                 break;
             }
         }
-        response.stats = this.StatsRepo.create(defaultStats);
-        response.stats.MasterUser = response.user;
-        await this.StatsRepo.save(response.stats);
+        
         return response;
     }
 

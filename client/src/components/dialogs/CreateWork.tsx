@@ -14,7 +14,9 @@ import { IWork, ITask } from '../../models/constructor.model';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { TimePicker } from '../complex/TimePicker';
 import { TooltipWrapper } from '../complex/Tooltip';
-
+import { TransferList } from '../complex/TransferList';
+import { IRealClass } from '../../models/class.model';
+import { ClassService } from '../../http/classAPI';
 
 /*
     Main page: name, section, amount of tasks, use advanced checking system
@@ -65,10 +67,21 @@ function DialogConclusionPage(props: DialogPageProps) {
 
 function DialogPrivacyPage(props: DialogPageProps) {
     const { formData, setFormData } = props;
+    const [classes, setClasses] = React.useState<IRealClass[]>([]);
+
+    const { user } = useTypedSelector(state => state.user);
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const data = await (await ClassService.findUserClass(user.user.id)).data;
+            setClasses(data);
+        }
+        fetchData();
+    }, [])
 
     const options = [
         {label: 'Только я', type: 'ME'},
-        {label: 'Только мой класс', type: 'CLASS'},
+        {label: 'Только мои классы', type: 'CLASS'},
         {label: 'Все', type: 'PUBLIC'}
     ]
 
@@ -76,6 +89,14 @@ function DialogPrivacyPage(props: DialogPageProps) {
         return options.find(option => option.type === type);
     }
 
+    const onAddClasses = (newClasses: number[]) => {
+        setFormData({type: 'addClasses', payload: newClasses});
+    }
+
+    const onRemoveClasses = (removedClasses: number[]) => {
+        setFormData({type: 'removeClasses', payload: removedClasses});
+    }
+    
     return (
         <>
         <div style={{height: '90%'}}>
@@ -84,6 +105,15 @@ function DialogPrivacyPage(props: DialogPageProps) {
                             onChange={(e, newValue) => setFormData({type: 'setPrivacy', payload: newValue ? newValue.type : 'ME'})}
                             renderInput={params => <TextField {...params} />} sx={{width: '100%'}} />
             } label='Кто может решать вашу работу' labelPlacement='start' sx={{columnGap: '5%'}} />
+            {formData.Privacy === 'CLASS' ? 
+                <TransferList
+                    choices={classes.map((e, index) => {return {id: e.id, label: e.Name, index: index}})}
+                    leftColumnTitle='Ваши классы'
+                    rightColumnTitle='Выбранные'
+                    onAddItems={onAddClasses}
+                    onRemoveItems={onRemoveClasses} />
+                : null
+            }
         </div>
         </>
     )
@@ -245,7 +275,18 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
         Time: 0,
         AdditionalTime: 0,
         Privacy: 'ME',
+        Classes: [],
         Tasks: []
+    }
+
+    const removeItems = (initial: any[], removed: any[]) => {
+        const response: any[] = [];
+        for(let i = 0; i < initial.length; i++) {
+            if (removed.find(e => e === initial[i]) === -1) {
+                response.push(initial[i]);
+            }
+        }
+        return response;
     }
 
     const formReducer = (state: IWork, action: {type: string, payload: any}) => {
@@ -274,6 +315,12 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
             case 'setAddTime': {
                 return {...state, AdditionalTime: action.payload};
             }
+            case 'addClasses': {
+                return {...state, Classes: state.Classes.concat(action.payload)};
+            }
+            case 'removeClasses': {
+                return {...state, Classes: removeItems(state.Classes, action.payload)};
+            }
             case 'setPrivacy': {
                 return {...state, Privacy: action.payload};
             }
@@ -285,7 +332,7 @@ export function CreateWorkDialog(props: CreateWorkDialogProps) {
 
     const serializer = new Serializer();
 
-    const [formData, setFormData] = React.useReducer(formReducer, initial)
+    const [formData, setFormData] = React.useReducer(formReducer, initial);
 
     const [activeStep, setActiveStep] = React.useState<number>(0);
 

@@ -10,13 +10,15 @@ import { Subject } from "../user/entities/subject.entity";
 import { User } from "../user/entities/user.entity";
 import { Solution } from "./entities/solution.entity";
 import { CreateSolutionDto } from "./dto/solution.dto";
-import { Stats } from "../user/entities/stats.entity";
+import { StudentStats } from "../user/entities/stats.entity";
+import { Class } from "../class/entities/class.entity";
+import { ClassService } from "src/class/class.service";
 
 
 @Injectable()
 export class SolutionService {
     constructor(@InjectRepository(Solution) private SolutionRepo: Repository<Solution>,
-                @InjectRepository(Stats) private StatsRepo: Repository<Stats>,
+                @InjectRepository(StudentStats) private StatsRepo: Repository<StudentStats>,
                 @InjectRepository(User) private UserRepo: Repository<User>,
                 @InjectRepository(Work) private WorkRepo: Repository<Work>) {}
 
@@ -38,7 +40,21 @@ export class SolutionService {
 
     async getWorkSolutions(workId: number) {
         const targetWork = await this.WorkRepo.findOne({where: {id: workId}});
-        const response = await this.SolutionRepo.find({where: {Work: targetWork}});
+        const solutions = await this.SolutionRepo.find({where: {Work: targetWork}, relations: {Author: true}});
+        const response: any[] = [];
+        for (let i = 0; i < solutions.length; i++) {
+            const current = await (await this.StatsRepo.findOne({where: {id: solutions[i].Author.id}, relations: {MasterUser: true}})).MasterUser;
+            if (current) {
+                response.push({...solutions[i], Author: current});
+            }
+        }
+        return response;
+    }
+
+    async assessSolution(solutionId: number, mark: string) {
+        console.log(solutionId, mark)
+        const targetSolution = await this.SolutionRepo.findOne({where: {id: solutionId}});
+        const response = await this.SolutionRepo.update(solutionId, {...targetSolution, Rating: mark});
         return response;
     }
 }
@@ -79,7 +95,8 @@ export class WorkService {
     constructor(@InjectRepository(Work) private WorkRepo: Repository<Work>,
                 @InjectRepository(Subject) private SubjectRepo: Repository<Subject>,
                 @InjectRepository(User) private UserRepo: Repository<User>,
-                private TaskService: TaskService) {}
+                private TaskService: TaskService,
+                private ClassService: ClassService) {}
 
     async createWork(workDto: CreateWorkDto): Promise<Work> {
         const createTasks = async (tasks: any[], parentInstance: Partial<Work>) => {
@@ -99,7 +116,13 @@ export class WorkService {
         const formed = {...workDto, Category: sbj, Author: user}
         delete formed.Tasks;
 
-        const response = this.WorkRepo.create({...formed});
+        const targetClasses: Class[] = []
+        for (let i = 0; i < workDto.Classes.length; i++) {
+            const current = await this.ClassService.getClassById(workDto.Classes[i]);
+            targetClasses.push(current);
+        }
+
+        const response = this.WorkRepo.create({...formed, Classes: targetClasses});
         await this.WorkRepo.save(response);
         await createTasks(workDto.Tasks, response);
         return response;
@@ -122,7 +145,7 @@ export class WorkService {
         let response: {work: any, tasks: any} = {work: {}, tasks: {}};
         response.work = await this.WorkRepo.findOne({
             where: {id: workId},
-            relations: ['Category']
+            relations: {Category: true, Author: true}
         });
         response.tasks = await this.TaskService.findAllWorksTasks(response.work);
         return response;
@@ -131,7 +154,7 @@ export class WorkService {
     async getWorkByName(name: string): Promise<Work> {
         const response = await this.WorkRepo.findOne({
             where: {Name: name},
-            relations: ['Category']
+            relations: ['Category', 'Author']
         });
         return response;
     }

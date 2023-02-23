@@ -29,7 +29,7 @@ function ConclusionPage(props: any) {
             Content: serializer.serialize(props.repo.repository),
             Work: props.work.work.id,
             Author: user.user.id,
-            Rating: 0
+            Rating: '0'
         }
         console.log(obj)
         SolutionService.createSolution(obj);
@@ -126,6 +126,7 @@ export function TaskView() {
         const hashes = {tasks: tasks.map((task: any) => {return task.TaskHashUi})}
         const store = createConstructorStore({...Constants.initialConstructorState, totalPages: hashes.tasks.length});
         const res = serializer.deserialize(hashes, canvasRef, store, 'U');
+        res._store.setState(state => {return {...state, currentPage: 1}});
         setRepo(res);
         return res
     }
@@ -158,6 +159,7 @@ export function TaskView() {
             if (shift < 0 && currentTask === 1) {
             } else {
                 setCurrentTask(currentTask + shift);
+                repo?._store.setState(state => {return {...state, currentPage: state.currentPage + shift}});
             }
         } 
     }

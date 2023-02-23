@@ -41,7 +41,7 @@ export class Work {
     @Column()
     Privacy: string;
 
-    @ManyToMany(() => Class, classEntity => classEntity.ClassWorks, {nullable: true})
+    @ManyToMany(() => Class, classEntity => classEntity.ClassWorks)
     Classes: Class[];
 
     @OneToMany(() => Task, task => task.ParentWork)

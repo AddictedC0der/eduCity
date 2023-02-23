@@ -4,6 +4,7 @@ import { ClassService } from '../../http/classAPI';
 import { IRealClass } from '../../models/class.model';
 import { useNavigate } from 'react-router-dom';
 import { RoutesEnum } from '../../router';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 
 interface TasksTableProps {
@@ -15,6 +16,7 @@ export function TasksTable(props: TasksTableProps) {
     const [list, setList] = React.useState([]);
 
     const navigate = useNavigate();
+    const { user } = useTypedSelector(state => state.user);
 
     React.useEffect(() => {
         const fetchData = async () => {
@@ -41,7 +43,8 @@ export function TasksTable(props: TasksTableProps) {
         console.log(params)
         console.log(event)
         console.log(details)
-        navigate(`${RoutesEnum.TASK_VIEW}?id=${params.id}`)
+        const route = user.user.Role === 'Student' ? `${RoutesEnum.TASK_VIEW}?id=${params.id}` : `${RoutesEnum.WORK_ANALYSIS}?id=${params.id}`;
+        navigate(route, {state: {classId: params.id}})
     }
 
     return (
