@@ -34,6 +34,11 @@ export class SchoolService {
         return response;
     }
 
+    static async getUserSchools(userId: number) {
+        const response = $api.get(`/school/user/${userId}`);
+        return response;
+    }
+
     static async getAll(): Promise<AxiosResponse> {
         const response = $api.get(`/school/all`);
         return response;

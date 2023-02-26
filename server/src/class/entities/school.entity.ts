@@ -19,7 +19,7 @@ export class School {
     @Column()
     Rating: number;
 
-    @ManyToMany(() => User)
+    @ManyToMany(() => User, {eager: true})
     @JoinTable()
     Admins: User[];
 }

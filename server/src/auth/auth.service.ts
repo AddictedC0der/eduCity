@@ -30,7 +30,6 @@ export class TokenService {
 
     async setToken(userId: number, token: string) {
         const data = await this.UserRepo.findOne({where: {id: userId}, relations: {Token: true}});
-        console.log(data);
         if (data.Token) {
             const response = await this.TokenRepo.update({id: data.Token.id}, {...data.Token, refreshToken: token});
             return response;

@@ -89,6 +89,15 @@ export class SchoolService {
         return response;
     }
 
+    async getUserSchools(userId: number) {
+        // const response: School[] = [];
+        // const targetClasses = await this.ClassService.getUserClass(userId);
+        // for (let i = 0; i < targetClasses.length; i++) {
+        //     response.push(targetClasses[i].School);
+        // }
+        // return response;
+    }
+
     async getAll() {
         const response = await this.SchoolRepo.find({relations: ['Admins']});
         return response;
@@ -218,7 +227,7 @@ export class ClassService {
     }
 
     async getAll() {
-        const response = await this.ClassRepo.find();
+        const response = await this.ClassRepo.find({relations: {School: true}});
         return response;
     }
 }

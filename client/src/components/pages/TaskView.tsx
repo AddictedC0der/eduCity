@@ -167,7 +167,7 @@ export function TaskView() {
     return (
         <MainLayout paddingMain='NONE'>
             { work ?
-            <div style={{width: '100%', height: '100%', backgroundColor: 'rgb(230, 230, 255)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+            <div style={{width: '100%', height: '100%', backgroundColor: '#b0d7e1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                 <div style={{width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     {renderPage()}
                 </div>

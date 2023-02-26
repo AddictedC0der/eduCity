@@ -149,7 +149,7 @@ function MyClass(props: MyClassProps) {
     const [currentTab, setCurrentTab] = React.useState<number>(0);
 
     const convertToClass = (realClass: IRealClass) => {
-        const response: IClass = {...realClass, ContainedStudents: [], ContainedTeachers: []};
+        const response: IClass = {...realClass, ContainedStudents: [], ContainedTeachers: [], School: realClass.School.id};
         realClass.ContainedStudents.map(e => response.ContainedStudents.push(e.id));
         realClass.ContainedTeachers.map(e => response.ContainedTeachers.push(e.id));
         return response;
@@ -172,7 +172,7 @@ function MyClass(props: MyClassProps) {
     }
     
     return (
-        <Grid container direction='row' width='100%' height='80vh'>
+        <Grid container direction='row' width='100%' height='80vh' columnGap={5}>
             <Grid item xs={1} justifyContent='center'>
                 <Typography sx={{display: 'flex', justifyContent: 'center'}}>Классы</Typography>
                 <List>

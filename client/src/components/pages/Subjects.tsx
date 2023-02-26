@@ -8,8 +8,8 @@ import { useNavigate } from 'react-router-dom';
 function SubjectBox(props: {title: string, path: string}) {
     const navigate = useNavigate()
     return (
-        <Button onClick={() => navigate(props.path, {state: {subject: props.title}})} sx={{backgroundColor: 'red', color: 'white', width: '30%', height: '10vh',
-                '&:hover': {backgroundColor: 'black'}}}>
+        <Button onClick={() => navigate(props.path, {state: {subject: props.title}})} sx={{backgroundColor: 'primary.light', color: 'white', width: '90%', height: '10vh',
+                '&:hover': {backgroundColor: '#f8a638'}}}>
             <Typography>{props.title}</Typography>
         </Button>
     )
@@ -18,10 +18,10 @@ function SubjectBox(props: {title: string, path: string}) {
 
 const subjectsList = subjects.Groups.map(group => {return (
     <Box key={`${group.Title}`} sx={{width: '100%'}} aria-label='SubjectGroupBox'>
-        <Typography>{group.Title}</Typography>
-        <Grid container item direction='row' aria-label='SubjectsGroupGrid' spacing={1}>
+        <Typography variant='button'>{group.Title}</Typography>
+        <Grid container item direction='row' aria-label='SubjectsGroupGrid' spacing={1} columns={3}>
             {group.Contents.map(sbj => {return (
-                <Grid item key={`${sbj.Name}`} width='100%' height='80%' aria-label='SubjectBoxGrid'>
+                <Grid item key={`${sbj.Name}`} width='40%' height='80%' aria-label='SubjectBoxGrid'>
                     <SubjectBox title={`${sbj.Name}`} path={sbj.Path} />
                 </Grid>
             )})}
@@ -38,7 +38,7 @@ export function Subjects() {
 
     return (
         <MainLayout paddingMain='ALL'>
-            <Grid container direction='column' sx={{width: '100%'}} aria-label='SubjectsMainGrid'>
+            <Grid container direction='column' sx={{width: '100%'}} rowGap={4} aria-label='SubjectsMainGrid'>
                 {subjectsList}
             </Grid>
         </MainLayout>

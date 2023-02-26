@@ -209,6 +209,14 @@ export class SchoolController {
         return response
     }
 
+    @ApiOperation({summary: 'Gets school by ID.'})
+    @ApiResponse({status: 200, type: ChatMessage})
+    @Get('/user/:id')
+    async getUserSchools(@Param('id') userId: number) {
+        const response = this.SchoolService.getUserSchools(userId);
+        return response
+    }
+
     @ApiOperation({summary: 'Gets all schools.'})
     @ApiResponse({status: 200, type: ChatMessage})
     @Get('/all')

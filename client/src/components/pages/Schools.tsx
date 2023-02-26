@@ -20,7 +20,7 @@ function SchoolsList(props: SchoolListProps) {
         props.schools.length ?
         props.schools.map(school => { return (
             <ListItem key={school.SchoolName}>
-                <Button sx={{width: '20%', height: '10vh', backgroundColor: 'rgb(200, 80, 20)', color: 'white', padding: '5%'}}
+                <Button sx={{width: '20%', height: '10vh', backgroundColor: 'primary.light', color: 'white', padding: '5%'}}
                         onClick={() => navigate(`/schools/${school.id}`, {state: {school: school}})}>
                     <Typography>{school.SchoolName}</Typography>
                 </Button>

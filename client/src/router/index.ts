@@ -47,7 +47,7 @@ export enum RoutesEnum {
 
 export const PublicRoutes: IRoute[] = [
     {path: RoutesEnum.REGISTER, element: SignUp},
-    {path: RoutesEnum.LOGIN, element: LogIn}
+    // {path: RoutesEnum.LOGIN, element: LogIn}
 ]
 
 export let PrivateRoutes: IRoute[] = [

@@ -2,8 +2,10 @@ import { Body, Controller, Post, Get, Put, Delete, Param, Response, Req, Query }
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger'
 import { Parent, Student, Teacher, User } from "./entities/user.entity";
 import { Subject } from "./entities/subject.entity";
-import { UserService, SubjectService } from "./user.service";
+import { UserService, SubjectService, ResourceService } from "./user.service";
 import { CreateUserDto, UpdateUserDto } from "./dto/user.dto";
+import { Resource } from "./entities/resource.entity";
+import { CreateResouceDto } from "./dto/resource.dto";
 
 
 @ApiTags('Subject')
@@ -62,7 +64,7 @@ export class SubjectController {
 
     @ApiOperation({summary: 'Get all subjects.'})
     @ApiResponse({status: 200, type: Subject})
-    @Get('/all')
+    @Get('/get/all')
     getAll() {
         return this.subjectService.getAllSubjects();
     }
@@ -142,5 +144,33 @@ export class UserController {
     @Get('/all')
     getAll() {
         return this.userService.getAll();
+    }
+}
+
+
+@ApiTags('Resource')
+@Controller('/api/resource')
+export class ResourceController {
+    constructor(private resourceService: ResourceService) {}
+
+    @ApiOperation({summary: 'Creation of resource.'})
+    @ApiResponse({status: 201, description: 'Resource has been successfully created.', type: Resource})
+    @Post('/create')
+    createResource(@Body() resourceDto: CreateResouceDto) {
+        return this.resourceService.createResource(resourceDto);
+    }
+
+    @ApiOperation({summary: 'Removal of resource.'})
+    @ApiResponse({status: 201, description: 'Resource has been successfully deleted.', type: Resource})
+    @Delete(':id')
+    deleteUser(@Param('id') resourceId: number) {
+        return this.resourceService.deleteResource(resourceId);
+    }
+
+    @ApiOperation({summary: 'Get all resources.'})
+    @ApiResponse({status: 200, type: Resource})
+    @Get('/get/all')
+    getAll() {
+        return this.resourceService.getAll();
     }
 }

@@ -31,8 +31,11 @@
     "react-resizable": "^3.0.4",
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
+    "react-tsparticles": "^2.9.3",
+    "recharts": "^2.4.3",
     "redux": "^4.2.0",
     "shortid": "^2.2.16",
+    "tsparticles": "^2.9.3",
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {

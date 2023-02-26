@@ -27,23 +27,22 @@ export const MainLayout: React.FC<MainLayoutProps> = ({children, paddingMain}) =
         </Box>)
     : null
 
-    const paddingValue: any = types.paddingConstants[paddingMain]
+    const paddingValue: any = types.paddingConstants[paddingMain] //sx={{maxWidth: '100vw', minHeight: '98vh'}}
     return (
-        <Masonry sx={{maxWidth: '100vw', minHeight: '98vh'}} aria-label='MainGrid' columns={1} spacing={0}>
-            <Grid container item width='100%'>
-                <NavBar />
-            </Grid>
-            <Grid container item sx={{width: '100%', boxSizing: 'border-box', ...paddingValue}}>
+        // <Masonry sx={{display: 'flex', minHeight: '100vh'}} aria-label='MainGrid' columns={1} spacing={0}>
+        <Box sx={{width: '100%', minHeight: '100vh'}}>
+            <NavBar />
+            <Grid container item sx={{width: '100%', boxSizing: 'border-box', marginTop: '5%', ...paddingValue}}>
                 {children}
             </Grid>
-            <Grid item width='100%'>
-                <Footer />
-            </Grid>
-            <Snackbar open={warning} onClose={hideWarning}>
+            <Footer />
+            {/* <Snackbar open={warning} onClose={hideWarning}>
                 <Alert onClose={hideWarning} severity="warning">
                     У вас есть невыполненные задания!
                 </Alert>
-            </Snackbar>
-        </Masonry>
+            </Snackbar> */}
+        
+        {/* </Masonry> */}
+        </Box>
     )
 }

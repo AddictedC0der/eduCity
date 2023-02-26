@@ -8,6 +8,8 @@ import { CreateUserDto, UpdateUserDto } from "./dto/user.dto";
 import { CreateTeacherStatsDto, CreateStudentStatsDto } from "./dto/stats.dto";
 import { DataSource } from "typeorm";
 import { Solution } from "../work/entities/solution.entity";
+import { Resource } from "./entities/resource.entity";
+import { CreateResouceDto } from "./dto/resource.dto";
 
 
 const defaultStudentStats: CreateStudentStatsDto = {
@@ -179,4 +181,31 @@ export class UserService {
         const response = await this.UserRepo.find();
         return response;
     }
+}
+
+
+@Injectable()
+export class ResourceService {
+    constructor(@InjectRepository(Resource) private ResourceRepo: Repository<Resource>,
+                @InjectRepository(Subject) private SubjectRepo: Repository<Subject>,
+                @InjectRepository(User) private UserRepo: Repository<User>) {}
+    
+    async createResource(resourceDto: CreateResouceDto) {
+        const targetUser = await this.UserRepo.findOne({where: {id: resourceDto.Author}});
+        const targetSubject = await this.SubjectRepo.findOne({where: {id: resourceDto.Category}})
+        const response = this.ResourceRepo.create({...resourceDto, Author: targetUser, Category: targetSubject});
+        await this.ResourceRepo.save(response);
+        return response;
+    }
+
+    async deleteResource(resourceId: number) {
+        const response = await this.ResourceRepo.delete(resourceId);
+        return response;
+    }
+
+    async getAll() {
+        const repsonse = await this.ResourceRepo.find();
+        return repsonse;
+    }
+
 }

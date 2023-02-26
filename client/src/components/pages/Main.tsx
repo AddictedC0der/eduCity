@@ -1,17 +1,17 @@
 import * as React from 'react';
-import { Box, Typography, Grid, Button } from '@mui/material';
+import { Box, Typography, Grid, Button, useTheme } from '@mui/material';
 import { MainLayout } from '../layouts/MainLayout';
 import { useNavigate } from 'react-router-dom';
 import { RoutesEnum } from '../../router';
 
 
 function ResourcesBlock(props: {title: string, link: string}) {
-    const navigate = useNavigate()
-    
+    const navigate = useNavigate();
+    const theme = useTheme();
+
     return (
-        <Button onClick={() => navigate(props.link)} sx={{backgroundColor: 'rgb(200, 80, 20)', color: 'white', width: '80%', height: '20vh',
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            '&:hover': {backgroundColor: 'black'}}}>
+        <Button onClick={() => navigate(props.link)} sx={{backgroundColor: theme.palette.primary.light, color: theme.palette.primary.contrastText, width: '80%', height: '20vh',
+            display: 'flex', justifyContent: 'center', alignItems: 'center', '&:hover': {backgroundColor: '#f8a638'}}}>
             <Typography>{props.title}</Typography>
         </Button>
     )

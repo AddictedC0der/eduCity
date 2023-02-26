@@ -1,3 +1,4 @@
+import { IRealSchool } from "./school.model";
 import { IUser } from "./user.model";
 
 export interface IClass {
@@ -11,7 +12,7 @@ export interface IClass {
 export interface IRealClass {
     id: number;
     Name: string;
-    School: number;
+    School: IRealSchool;
     ContainedStudents: IUser[];
     ContainedTeachers: IUser[];
 }

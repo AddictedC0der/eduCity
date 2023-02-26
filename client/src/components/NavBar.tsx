@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { List, ListItemButton, ListItemText, Box, Avatar, Grid, Typography, Button } from '@mui/material';
+import { List, ListItemButton, ListItemText, Box, Avatar, Grid, Typography, Button, useTheme, AppBar, Toolbar, Container } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Footer } from './Footer';
 import { useTypedSelector } from '../hooks/useTypedSelector';
@@ -33,7 +33,7 @@ function UserSection() {
     const navigate = useNavigate();
 
     return (
-        <Button onClick={() => navigate(`/account/${user.user.id}`)}>
+        <Button onClick={() => navigate(`/account/${user.user.id}`, {state: {user: user.user}})}>
             <Grid container direction='column' alignItems='center' width='100%' aria-label='UserSectionMainGrid'>
                 <Grid item xs={4} aria-label='UserAvatarGrid'>
                     <Avatar></Avatar>
@@ -48,22 +48,35 @@ function UserSection() {
 
 
 export function NavBar(props: any) {
+    const theme = useTheme();
+
     return (
-            <Grid container item sx={{ backgroundColor: '#5CDB95', width: '100%'}} aria-label='HeaderMainGrid'>
-                <Box sx={{color: '#EDF5E1', padding: '1%', width: '100vw'}} aria-label='NavBarBox'>
-                    <Grid container item direction='row' aria-label='NavBarGrid'>
-                        <Grid item aria-label='UserSectionGrid'>
-                            <UserSection />
-                        </Grid>
-                        <Grid item aria-label='NavigationListGrid'>
-                            <List>
-                                <Grid container direction='row' aria-label='NavigationGrid'>
-                                    {Navigation()}
-                                </Grid>
-                            </List>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
+            // <Grid container item sx={{backgroundColor: theme.palette.primary, width: '100%'}} aria-label='HeaderMainGrid'>
+            //     <Box sx={{color: '#EDF5E1', padding: '1%', width: '100vw'}} aria-label='NavBarBox'>
+            //         <Grid container item direction='row' aria-label='NavBarGrid'>
+            //             <Grid item aria-label='UserSectionGrid'>
+            //                 <UserSection />
+            //             </Grid>
+            //             <Grid item aria-label='NavigationListGrid'>
+            //                 <List>
+            //                     <Grid container direction='row' aria-label='NavigationGrid'>
+            //                         {Navigation()}
+            //                     </Grid>
+            //                 </List>
+            //             </Grid>
+            //         </Grid>
+            //     </Box>
+            // </Grid>
+
+            <AppBar>
+                <Container maxWidth='xl'>
+                    <Toolbar disableGutters>
+                        <UserSection />
+                        <Box sx={{display: 'flex', flexDirection: 'row'}}>
+                            {Navigation()}
+                        </Box>
+                    </Toolbar>
+                </Container>
+            </AppBar>
     )
 }

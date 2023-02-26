@@ -1,8 +1,11 @@
 import * as React from 'react';
-import { Typography, Box, Stack, Button } from '@mui/material';
+import { Typography, Box, Stack, Button, Dialog, DialogTitle, DialogContent, Link, Menu, MenuItem } from '@mui/material';
 import { MainLayout } from '../layouts/MainLayout';
 import { DataGrid, GridColDef, GridRowsProp, GridCellParams } from '@mui/x-data-grid';
 import { AddResourceDialog } from '../dialogs/AddResource';
+import { IRealResource } from '../../models/resource.model';
+import { ResourceService } from '../../http/ResourceAPI';
+import { useTypedSelector } from '../../hooks/useTypedSelector';
 
 
 const columns: GridColDef[] = [
@@ -11,16 +14,19 @@ const columns: GridColDef[] = [
     {field: 'adder', headerName: 'Добавил', flex: 0.4}
 ]
 
-const rows: GridRowsProp = [
-    {id: 0, ref: 'www.problems.ru', category: 'Математика', adder: 'Me'}
-]
-
 
 export function Resources() {
     const [dialogOpen, setDialogOpen] = React.useState<boolean>(false);
-    
+    const [data, setData] = React.useState<IRealResource[]>([]);
+
     React.useEffect(() => {
         document.title = 'Ресурсы | EduCity';
+
+        const fetchData = async () => {
+            const res = await (await ResourceService.getAll()).data;
+            setData(res);
+        }
+        fetchData();
     }, [])
 
     const openDialog = () => {
@@ -33,15 +39,18 @@ export function Resources() {
         }
     }
 
-    const handleAddResource = () => {
-        // TODO: Add later
+    const generateRows = (): GridRowsProp => {
+        if (data) {
+            return data.map(e => {return {id: e.id, ref: e.Link, category: e.Category.SubjectName, adder: e.Author.UserLogin}})
+        }
+        return [];
     }
 
     return (
         <MainLayout paddingMain='ALL'>
             <div style={{height: '100vh', width: '100%'}}>
                 <Button onClick={openDialog} variant='contained'>Добавить ресурс</Button>
-                <DataGrid columns={columns} rows={rows} onCellClick={handleCellClick} sx={{marginTop: '1%'}} />
+                <DataGrid columns={columns} rows={generateRows()} onCellClick={handleCellClick} sx={{marginTop: '1%'}} />
             </div>
             <AddResourceDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
         </MainLayout>
