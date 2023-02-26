@@ -43,7 +43,7 @@ export function School() {
                     <div style={{width: '100%', display: 'flex', flexDirection: 'column'}}>
                         <Typography variant='h2'>{data.SchoolName}</Typography>
                         <Typography variant='h5'>{data.Address}</Typography>
-                        <Link href={data.Link} variant='h4'>{data.Link}</Link>
+                        <Link onClick={() => handleNavigateToSite(data.Link)} variant='h4'>{data.Link}</Link>
                         <Rating value={data.Rating} precision={0.5} readOnly />
                     </div>
                 </Box>
