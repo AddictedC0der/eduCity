@@ -42,19 +42,19 @@ export function BasePropertiesArea(props: {properties: any}) {
     return (
         <List>
             <ListItem>
-                <FormControlLabel control={<TextField value={properties.Properties.Base.Width} onChange={handleChangeWidth} />}
+                <FormControlLabel control={<TextField sx={{width: '90%'}} value={properties.Properties.Base.Width} onChange={handleChangeWidth} />}
                                 labelPlacement='start' label={'Ширина'} id='Width' />
             </ListItem>
             <ListItem>
-                <FormControlLabel control={<TextField value={properties.Properties.Base.Height} onChange={handleChangeHeight} />}
+                <FormControlLabel control={<TextField sx={{width: '90%'}} value={properties.Properties.Base.Height} onChange={handleChangeHeight} />}
                                 labelPlacement='start' label={'Высота'} id='Height' />
             </ListItem>
             <ListItem>
-                <FormControlLabel control={<TextField value={properties.Properties.Base.X} onChange={handleChangeX} />}
+                <FormControlLabel control={<TextField sx={{width: '90%'}} value={properties.Properties.Base.X} onChange={handleChangeX} />}
                                 labelPlacement='start' label={'X'} id='X' />
             </ListItem>
             <ListItem>
-                <FormControlLabel control={<TextField value={properties.Properties.Base.Y} onChange={handleChangeY} />}
+                <FormControlLabel control={<TextField sx={{width: '90%'}} value={properties.Properties.Base.Y} onChange={handleChangeY} />}
                                 labelPlacement='start' label={'Y'} id='Y' />
             </ListItem>
         </List>
@@ -84,8 +84,8 @@ export class BaseInteractive extends React.Component<
         this.state = {
             selected: false,
             properties: {...props.properties}
+            
         }
-
         this.children = props.children;
         this.onSelect = props.onSelect;
         this.onDeselect = props.onDeselect;
@@ -111,7 +111,6 @@ export class BaseInteractive extends React.Component<
 
     handleClickOutside(event: any) {
         if (this.wrapperRef && !this.wrapperRef.current.contains(event.target) && this.parent.current.contains(event.target)) {
-            console.log('Clicked outside')
             this.deselectSelf()
         } else {
             if (this.wrapperRef && this.wrapperRef.current.contains(event.target)) {
@@ -155,7 +154,6 @@ export class BaseInteractive extends React.Component<
             //@ts-ignore
             document.getElementById('PropertiesAreaPlaceholder')
         )
-        console.log(this.state.properties.Base)
         return (
             <>
             {this.state.selected ? PropertiesArea : null}

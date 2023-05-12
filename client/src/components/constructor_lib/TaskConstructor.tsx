@@ -74,7 +74,7 @@ export function TaskConstructor() {
                             <Button variant='contained' onClick={() => setOpenDialog(true)}>Создать</Button>
                         </Grid>
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={2} sx={{paddingLeft: '5%', paddingRight: '1%'}}>
                         <PropertiesArea store={store} repo={componentsRepo} />
                     </Grid>
                 </Grid>

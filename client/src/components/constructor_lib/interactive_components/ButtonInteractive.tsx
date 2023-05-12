@@ -50,15 +50,15 @@ export function ButtonInteractivePropertiesArea() {
             <BasePropertiesArea properties={properties} />
             <ListItem>
                 <FormControlLabel control={<TextField value={properties.Properties.Local.Text}
-                                onChange={(e: any) => handleChangeProperty(e, 'Text')} />} label={'Текст'} id='Text' />
+                                onChange={(e: any) => handleChangeProperty(e, 'Text')} />} labelPlacement='start' label={'Текст'} id='Text' />
             </ListItem>
             <ListItem>
                 <FormControlLabel control={<MuiColorInput value={properties.Properties.Local.TextColor} 
-                                onChange={handleChangeTextColor} />} label={'Цвет текста'} id='TextColor' />
+                                onChange={handleChangeTextColor} />} labelPlacement='start' label={'Цвет текста'} id='TextColor' />
             </ListItem>
             <ListItem>
                 <FormControlLabel control={<MuiColorInput value={properties.Properties.Local.BackgroundColor} 
-                                onChange={handleChangeBackgroundColor} />} label={'Цвет фона'} id='BackgroundColor' />
+                                onChange={handleChangeBackgroundColor} />} labelPlacement='start' label={'Цвет фона'} id='BackgroundColor' />
             </ListItem>
         </List>
     )
@@ -80,7 +80,7 @@ export function ButtonInteractiveInner(props: any) {
 
     return (
         <Button variant='contained'
-                sx={{height: props.way === 'I' ? '100%' : properties.Properties.Base.Height, width: props.way === 'I' ? '100%' : properties.Properties.Base.Width,
+                sx={{height: props.way === 'I' ? '97%' : properties.Properties.Base.Height, width: props.way === 'I' ? '97%' : properties.Properties.Base.Width,
                 position: 'absolute',
                 ...shift,
                 backgroundColor: properties.Properties.Local.BackgroundColor,

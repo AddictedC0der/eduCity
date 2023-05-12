@@ -30,8 +30,6 @@ export class ComponentsRepository {
     // }
 
     trackChanges(transferObj: Types.IPropertiesLike, id: string) {
-        console.log('Changes detected:');
-        console.log(this.repository);
         this.repository.map(page => page.map(e => {
             if (e.id === id) {
                 e.properties.Local = transferObj.Local;
@@ -51,7 +49,7 @@ export class ComponentsRepository {
             key={newId}
             parent={parent}
             wrapperRef={newComponentRef}
-            onSelect={() => {this._store.setState((prev: Types.IConstructorState) => ({...prev, selectedComponent: newId}))}}
+            onSelect={() => this._store.setState((prev: Types.IConstructorState) => ({...prev, selectedComponent: newId}))}
             onDeselect={() => {this._store.setState((prev: Types.IConstructorState) => ({...prev, selectedComponent: null}))}}
             onPropertyChange={(transferObj: Types.IPropertiesLike) => this.trackChanges(transferObj, newId)}
         />

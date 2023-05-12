@@ -111,7 +111,7 @@ export function Toolbar(props: any) {
     const [tab, setTab] = React.useState<number>(0);
 
     return (
-        <Box sx={{border: '1px solid black', width: '100%', height: '100%'}} aria-label='Toolbar-MainBox'>
+        <Box sx={{width: '100%', height: '100%', marginLeft: '5%'}} aria-label='Toolbar-MainBox'>
             <Tabs value={tab} onChange={(e, newValue) => setTab(newValue)}>
                 <Tab label='Компоненты' / >
                 <Tab label='Присеты' / >

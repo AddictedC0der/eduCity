@@ -7,7 +7,7 @@ import { ComponentsRepository } from '../ComponentsRepository';
 
 export function PropertiesArea(props: Types.PropetiesAreaProps) {
     return (
-        <Box id='PropertiesAreaPlaceholder' sx={{border: '1px solid black', width: '100%', height: '100%'}}
+        <Box id='PropertiesAreaPlaceholder' sx={{width: '100%', height: '100%'}}
                 aria-label='PropertiesArea-MainBox'>
         </Box>
     )

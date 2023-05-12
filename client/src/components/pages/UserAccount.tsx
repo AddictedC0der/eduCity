@@ -11,8 +11,9 @@ import { IClass, IRealClass } from '../../models/class.model';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { IRealSchool } from '../../models/school.model';
 import { IUser } from '../../models/user.model';
-import { PieChart, Pie, Cell, Label } from 'recharts';
+import { PieChart, Pie, Cell, Label, ResponsiveContainer } from 'recharts';
 import { SolutionService } from '../../http/solutionAPI';
+import { IRealSolution } from '../../models/solution.model';
 
 
 interface TitledPanelProps {
@@ -36,31 +37,45 @@ function TitledPanel(props: TitledPanelProps) {
 }
 
 
+interface CutsomPieChartLabelParameters {
+    cx: number,
+    cy: number,
+    midAngle: number,
+    innerRadius: number,
+    outerRadius: number,
+    percent: number,
+    index: number
+}
+
+
 export function UserAccount() {
+    // FC defining UI and logic of user Account panel
     const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
     const [openPasswordDialog, setOpenPasswordDialog] = React.useState<boolean>(false);
-    const [data, setData] = React.useState<IRealClass[]>();
-    const [points, setPoints] = React.useState<number[]>([]);
+    const [classes, setClasses] = React.useState<IRealClass[]>();
+    const [points, setPoints] = React.useState<number[]>([]);   // Amount of points gained for completion of works
+    const [userSolutions, setUserSolutions] = React.useState<IRealSolution[]>([]);
 
     React.useEffect(() => {
+        // Extracting data about stats and classes user participating in
         document.title = `${user.user.UserLogin} | EduCity`;
 
-        const fetchData = async () => {
+        const fetchClasses = async () => {
             const res = await (await ClassService.findUserClass(state.user.id)).data;
-            setData(res);
-            console.log(res);
+            setClasses(res);
         }
 
         const fetchStatsData = async () => {
             const response: number[] = [];
             const res = await (await SolutionService.getUserSolutions(state.user.id)).data;
+            setUserSolutions(res);
             res.map((e: any) => {
                 response.push(parseFloat(e.Rating));
             })
             setPoints(response);
         }
         fetchStatsData()
-        fetchData();
+        fetchClasses();
     }, [])
 
     let { user } = useTypedSelector(state => state.user);
@@ -87,6 +102,7 @@ export function UserAccount() {
     }
 
     const formData = () => {
+        // Returns data required for pie charts on statistics panel
         let medium = 0;
         for (let i = 0; i < points.length; i++) {
             medium += points[i];
@@ -95,7 +111,21 @@ export function UserAccount() {
         console.log([{name: 'Group A', value: medium}, {name: 'Group B', value: 1 - medium}])
         return [{name: 'Group A', value: medium}, {name: 'Group B', value: 1 - medium}]
     }
+
     
+    const renderCustomizedLabel = (obj: CutsomPieChartLabelParameters) => {
+        const RADIAN = Math.PI / 180;
+        const radius = obj.innerRadius + (obj.outerRadius - obj.innerRadius) * 0.5;
+        const x = obj.cx + radius * Math.cos(-obj.midAngle * RADIAN);
+        const y = obj.cy + radius * Math.sin(-obj.midAngle * RADIAN);
+
+        return (
+            <text x={x} y={y} fill="white" textAnchor={x > obj.cx ? 'start' : 'end'} dominantBaseline="central">
+            {`${(obj.percent * 100).toFixed(0)}%`}
+            </text>
+        );
+    };
+
     return (
         <MainLayout paddingMain='ALL'>
             <Grid container sx={{height: '100vh', width: '100%'}} spacing={1}>
@@ -119,7 +149,7 @@ export function UserAccount() {
                     <Grid item sx={{width: '100%', height: '50%'}}>
                         <TitledPanel title='Классы и школы' paperProps={{display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%'}}>
                             <List>
-                                {data ? data.map(e => {return (
+                                {classes ? classes.map(e => {return (
                                     <ListItem key={e.id}>
                                         <Button sx={{width: '100%'}}>
                                             {e.Name}
@@ -128,7 +158,7 @@ export function UserAccount() {
                                 )}) : null}
                             </List>
                             <List>
-                                {data ? data.map(e => {return (
+                                {classes ? classes.map(e => {return (
                                     <ListItem key={e.id}>
                                         <Button onClick={() => handleNavigateToSchool(e.School)} sx={{width: '100%'}}>
                                             {e.School.SchoolName}
@@ -142,23 +172,27 @@ export function UserAccount() {
                 </Grid>
                 <Grid item xs={6} sx={{width: '100%', height: '100%'}}>
                     <TitledPanel title='Статистика'>
-                        <PieChart width={730} height={250}>
-                            <Pie startAngle={180}
-                                    endAngle={0}
-                                    label
-                                    data={formData()}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={50}
-                                    fill="#f1802d">
-                                {points.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={index === 0 ? '#f1802d' : '#123740'} />
-                                ))}
-                                <Label value='Средняя точность решения' position='outside' />
-                            </Pie>
-                        </PieChart>
+                        <Typography variant='h4' align='center' sx={{marginTop: '5%'}}>Всего {userSolutions.length} решений</Typography>
+                        <ResponsiveContainer height='90%'>
+                            <PieChart width={730} height={250}>
+                                <Pie startAngle={180}
+                                        endAngle={0}
+                                        labelLine={false}
+                                        label={renderCustomizedLabel}
+                                        data={formData()}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx="50%"
+                                        cy="50%"
+                                        outerRadius={80}
+                                        fill="#f1802d">
+                                    {points.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={index === 0 ? '#f1802d' : '#123740'} />
+                                    ))}
+                                    <Label value='Средняя точность решения' position='center' />
+                                </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
                     </TitledPanel>
                 </Grid>
             </Grid>

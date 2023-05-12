@@ -48,6 +48,6 @@ export function TasksTable(props: TasksTableProps) {
     }
 
     return (
-        <DataGrid onRowClick={handleClick} rows={rows} columns={columns} sx={{marginTop: '2%', height: '100%'}} />
+        <DataGrid onRowClick={handleClick} rows={rows} columns={columns} sx={{marginTop: '1%', height: '100%'}} />
     )
 }

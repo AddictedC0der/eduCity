@@ -8,12 +8,15 @@ import * as types from '../../models/layout.model';
 
 type MainLayoutProps = {
     paddingMain: types.paddingMain;
+    renderFooter?: boolean;
     children?: React.ReactNode;
 }
 
 
-export const MainLayout: React.FC<MainLayoutProps> = ({children, paddingMain}) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({children, paddingMain, renderFooter}) => {
     const [warning, setWarning] = React.useState(true);
+
+    renderFooter = renderFooter ?? true;
 
     const hideWarning = () => {
         setWarning(false);
@@ -35,7 +38,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({children, paddingMain}) =
             <Grid container item sx={{width: '100%', boxSizing: 'border-box', marginTop: '5%', ...paddingValue}}>
                 {children}
             </Grid>
-            <Footer />
+            {renderFooter ? <Footer /> : null}
             {/* <Snackbar open={warning} onClose={hideWarning}>
                 <Alert onClose={hideWarning} severity="warning">
                     У вас есть невыполненные задания!

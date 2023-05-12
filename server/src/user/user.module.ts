@@ -7,12 +7,14 @@ import { Subject } from './entities/subject.entity';
 import { UserService, SubjectService, ResourceService } from './user.service';
 import { ResourceController, SubjectController, UserController } from './user.controller';
 import { Resource } from './entities/resource.entity';
+import { Work } from '../work/entities/work.entity';
+// import { WorkService } from '../work/work.service';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Teacher, Student, Parent, StudentStats, Subject, Class, Resource])],
+  imports: [TypeOrmModule.forFeature([User, Teacher, Student, Parent, StudentStats, Subject, Class, Resource, Work])],
   controllers: [UserController, SubjectController, ResourceController],
-  providers: [UserService, SubjectService, ResourceService],
+  providers: [UserService, SubjectService, ResourceService, /* WorkService */],
   exports: [UserService]
 })
 

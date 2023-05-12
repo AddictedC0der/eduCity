@@ -10,6 +10,8 @@ import { DataSource } from "typeorm";
 import { Solution } from "../work/entities/solution.entity";
 import { Resource } from "./entities/resource.entity";
 import { CreateResouceDto } from "./dto/resource.dto";
+// import { WorkService } from "../work/work.service";
+import { Work } from "../work/entities/work.entity";
 
 
 const defaultStudentStats: CreateStudentStatsDto = {
@@ -23,7 +25,8 @@ const defaultTeacherStats: CreateTeacherStatsDto = {
 
 @Injectable()
 export class SubjectService {
-    constructor(@InjectRepository(Subject) private SubjectRepo: Repository<Subject>) {}
+    constructor(@InjectRepository(Subject) private SubjectRepo: Repository<Subject>,
+                @InjectRepository(Work) private WorkRepo: Repository<Work>) {}
 
     async createSubject(name: string) {
         const response = this.SubjectRepo.create({SubjectName: name});
@@ -63,7 +66,12 @@ export class SubjectService {
             where: {SubjectName: subjectName},
             relations: ['Works']
         })
-        return response.Works;
+        const reals = [];
+        for (let i = 0; i < response.Works.length; i++) {
+            reals.push((await this.WorkRepo.findOne({where: {id: response.Works[i].id}, relations: ['Author']})));
+        }
+        return reals;
+        // return response.Works;
     }
 
     async getSubjectById(id: number) {

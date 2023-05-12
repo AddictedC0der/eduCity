@@ -4,7 +4,7 @@ import { Dialog, DialogProps, DialogActions, DialogTitle, DialogContent, Typogra
 
 interface UserAgreementDialogProps {
     open: boolean;
-    onClose: () => void
+    onClose: (confirm: boolean) => void
 }
 
 
@@ -18,7 +18,7 @@ export function UserAgreementDialog(props: UserAgreementDialogProps) {
     }
 
     const submit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        onClose();
+        onClose(true);
     }
 
     // React.useEffect(() => {
@@ -26,13 +26,12 @@ export function UserAgreementDialog(props: UserAgreementDialogProps) {
     // }, [agreed])
 
     return (
-        <Dialog open={open} onClose={onClose}>
-            <DialogTitle>
+        <Dialog open={open} onClose={() => onClose(false)}>
+            <DialogTitle sx={{color: 'black'}}>
                 Пользовательсое соглашение
             </DialogTitle>
             <DialogContent>
-                Lorem ipsum dolar sit amet...Lorem ipsum dolar sit amet...Lorem ipsum dolar sit amet...Lorem ipsum dolar sit amet...Lorem ipsum dolar sit amet...
-                Lorem ipsum dolar sit amet...Lorem ipsum dolar sit amet...Lorem ipsum dolar sit amet...Lorem ipsum dolar sit amet...Lorem ipsum dolar sit amet...
+                Вы даёте согласие, что не будете использовать конструктор заданий в целях разработки, моделирования или создания ядерного оружия.
 
             </DialogContent>
             <DialogActions>

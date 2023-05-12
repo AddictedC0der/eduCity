@@ -36,11 +36,11 @@ function CoursesTab(props: TabProps) {
         {value === index && (
             <Box sx={{width: '100%', paddingTop: '2%'}}>
                 <Button variant='contained' onClick={() => navigate(RoutesEnum.THEORY_CONSTRUCTOR)}>Добавить курс</Button>
-                <Stack>
+                <Stack sx={{marginTop: '1%'}}>
                     {classes.map(cls =>
                         <Accordion expanded={expanded === `panel-${cls}`}
                                     onChange={handleChangeExpanded(`panel-${cls}`)}
-                                    sx={{width: '100%', height: '5vh', marginTop: '5%', backgroundColor: 'gray'}}
+                                    sx={{width: '100%', height: '5vh'}}
                                     key={cls}>
                             <AccordionSummary>
                                 <Typography>{cls}</Typography>
@@ -81,9 +81,9 @@ function TasksTab(props: TabProps) {
     
     const navigate = useNavigate()
 
-    const handleDialogClose = () => {
-        setOpen(false)
-        navigate(RoutesEnum.TASK_CONSTRUCTOR)
+    const handleDialogClose = (confirm: boolean) => {
+        setOpen(false);
+        if (confirm) navigate(RoutesEnum.TASK_CONSTRUCTOR);
     }
 
     const columns: GridColDef[] = [
@@ -95,12 +95,9 @@ function TasksTab(props: TabProps) {
     ]
 
     //@ts-ignore
-    const rows: GridRowsProp = list.map(e => {return {id: e.id, index: e.id, name: e.Name, author: 'Me', class: e.Class, difficulty: e.Difficulty}})
+    const rows: GridRowsProp = list.map(e => {return {id: e.id, index: e.id, name: e.Name, author: e.Author.UserLogin, class: e.Class, difficulty: `${e.Difficulty} / 10`}})
 
     const handleClick: GridEventListener<'rowClick'> = (params, event, details) => {
-        console.log(params)
-        console.log(event)
-        console.log(details)
         navigate(`${RoutesEnum.TASK_VIEW}?id=${params.id}`)
     }
 
@@ -109,7 +106,7 @@ function TasksTab(props: TabProps) {
         {value === index && (
             <Box sx={{width: '100%', height: '100%'}}>
                 <Button variant='contained' sx={{marginTop: '2%'}} onClick={e => setOpen(true)}>Добавить задание</Button>
-                <DataGrid onRowClick={handleClick} rows={rows} columns={columns} sx={{marginTop: '2%', height: '100%'}} />
+                <DataGrid onRowClick={handleClick} rows={rows} columns={columns} sx={{marginTop: '2%', height: '90%'}} />
                 <UserAgreementDialog open={open} onClose={handleDialogClose} />
             </Box>
         )}

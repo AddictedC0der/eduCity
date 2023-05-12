@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { RoutesEnum } from '../../router';
 import { UserService } from '../../http/userAPI';
 import { TasksTable } from '../complex/TasksTable';
+import { TooltipWrapper } from '../complex/Tooltip';
 
 
 interface MyClassProps {
@@ -24,12 +25,16 @@ interface MyClassProps {
 
 
 function RenderClassesList(props: {classes: IRealClass[], changeClass: React.Dispatch<React.SetStateAction<number>>;}) {
+    // Left panel with classes buttons
     return (
         <>
         {
             props.classes.map((e, index) => {return (
                 <ListItem key={e.Name} sx={{display: 'flex', justifyContent: 'center'}}>
-                    <Fab onClick={() => props.changeClass(index)}>{e.Name}</Fab>
+                    <TooltipWrapper title={e.Name} placement='right'>
+                        <Fab onClick={() => props.changeClass(index)}>{e.Name}</Fab>
+                    </TooltipWrapper>
+                    
                 </ListItem>
             )})
         }
@@ -56,8 +61,8 @@ function RenderMembersList(props: {members: IUser[]}) {
         return (
             props.members.map(member => {return (
                     member.Role === 'Teacher' ?
-                    <ListItem key={member.UserLogin}>
-                        <Button id={member.id.toString()} sx={{width: '100%'}} onClick={handleOpenMenu}>{member.UserLogin}</Button>
+                    <ListItem key={member.UserLogin} sx={{padding: '0'}}>
+                        <Button id={member.id.toString()} onClick={handleOpenMenu}>{member.UserLogin}</Button>
                     </ListItem> : null
                 )
             })
@@ -69,8 +74,8 @@ function RenderMembersList(props: {members: IUser[]}) {
             props.members.map(member => {
                 return (
                     member.Role === 'Student' ?
-                    <ListItem key={member.UserLogin}>
-                        <Button id={member.id.toString()} sx={{width: '100%'}} onClick={handleOpenMenu}>{member.UserLogin}</Button>
+                    <ListItem key={member.UserLogin} sx={{padding: '0'}}>
+                        <Button id={member.id.toString()} onClick={handleOpenMenu}>{member.UserLogin}</Button>
                     </ListItem> : null
                 )
             })
@@ -109,22 +114,23 @@ function RenderMembersList(props: {members: IUser[]}) {
     }
 
     return (
-        <>
-        {renderStudentsList()}
-        <Divider />
-        {renderTeachersList()}
-        <Menu
-            id="basic-menu"
-            anchorEl={anchor}
-            open={open}
-            onClose={handleCloseMenu}
-            MenuListProps={{
-            'aria-labelledby': 'basic-button',
-            }}
-        >
-            {renderMenuOptions()}
-        </Menu>
-        </>
+        <Box sx={{height: '100%', width: '100%', paddingLeft: '5%', boxSizing: 'border-box'}}>
+            <Typography sx={{width: '100%'}}>Ученики</Typography>
+            {renderStudentsList()}
+            <Typography sx={{width: '100%'}}>Учителя</Typography>
+            {renderTeachersList()}
+            <Menu
+                id="basic-menu"
+                anchorEl={anchor}
+                open={open}
+                onClose={handleCloseMenu}
+                MenuListProps={{
+                'aria-labelledby': 'basic-button',
+                }}
+            >
+                {renderMenuOptions()}
+            </Menu>
+        </Box>
     )
 }
 
@@ -172,43 +178,46 @@ function MyClass(props: MyClassProps) {
     }
     
     return (
-        <Grid container direction='row' width='100%' height='80vh' columnGap={5}>
-            <Grid item xs={1} justifyContent='center'>
-                <Typography sx={{display: 'flex', justifyContent: 'center'}}>Классы</Typography>
-                <List>
+        <Box sx={{display: 'flex', flexDirection: 'row', width: '100%', height: '100%', maxHeight: '100%'}}>
+            <Box sx={{height: '100%', width: '5%'}}>
+                <List sx={{height: '100%'}}>
                     <RenderClassesList classes={props.classes} changeClass={setCurrentClass} />
                 </List>
-            </Grid>
-            <Grid item xs sx={{height: '100%'}}>
-                {renderControlPanel()}
-                <Tabs value={currentTab} onChange={(_, newValue: number) => setCurrentTab(newValue)}>
-                    <Tab label='Чат' />
-                    <Tab label='Задания' />  
-                </Tabs>
-                <TabPanel index={0} value={currentTab}>
-                    <Chat />
-                </TabPanel>
-                <TabPanel index={1} value={currentTab}>
-                    <TasksTable masterClass={props.classes[currentClass]} />
-                </TabPanel>
-            </Grid>
-            <Grid item xs={1} sx={{height:'100%'}}>
-                <Typography sx={{display: 'flex', justifyContent: 'center'}}>Участники</Typography>
-                <List sx={{overflow: 'auto', maxHeight: '100%', height: '100%'}}>
-                    <RenderMembersList members={props.classes[currentClass].ContainedStudents.concat(props.classes[currentClass].ContainedTeachers)} />
-                </List>
-            </Grid>
-            <CreateClassDialog open={openDialog} onClose={() => setOpenDialog(false)} dto={convertToClass(props.classes[currentClass])} />
-            <AreYouSureDialog
-                open={openDeleteDialog}
-                onClose={() => setOpenDeleteDialog(false)}
-                onSubmit={handleDeleteClass}
-                content='Вы уверены, что хотите удалить класс?'
-                title='Внимание!' />
-        </Grid>
+            </Box>
+            <Box sx={{width: '95%', height: '100%', backgroundColor: '#e9ecef', borderRadius: '9px'}} aria-label='ClassArea'>
+                <Box sx={{boxSizing: 'border-box', height: '5%', paddingLeft: '2%', width: '100%', borderBottom: '1px solid #f1802d', display: 'flex', alignItems: 'center'}}
+                    aria-label='ClassInfoArea'>
+                    <Typography sx={{marginRight: '5%'}}>
+                        {props.classes[currentClass].Name} | {props.classes[currentClass].ContainedStudents.length + props.classes[currentClass].ContainedTeachers.length} участников
+                    </Typography>
+                    {renderControlPanel()}
+                </Box>
+                
+                <Box sx={{display: 'flex', flexDirection: 'row', height: '95%', width: '100%'}} aria-label='ChatAndMemebersArea'>
+                    <Box sx={{ height: '100%', width: '87%'}} aria-label='ChatArea'>
+                        <Tabs value={currentTab} onChange={(_, newValue: number) => setCurrentTab(newValue)} aria-label='ClassTabs'>
+                            <Tab label='Чат' />
+                            <Tab label='Задания' />
+                        </Tabs>
+                        <TabPanel index={0} value={currentTab}>
+                            <div style={{height: '95%'}}>
+                                <Chat />
+                            </div>
+                        </TabPanel>
+                        <TabPanel index={1} value={currentTab}>
+                            <TasksTable masterClass={props.classes[currentClass]} />
+                        </TabPanel>
+                    </Box>
+                    <Box sx={{height: '100%', width: '13%', backgroundColor: '#dee2e6'}} aria-label='MembersArea'>
+                        <List sx={{overflow: 'auto', maxHeight: '100%', height: '100%', paddingBottom: '0', width: '100%'}} aria-label='MemebersList'>
+                            <RenderMembersList members={props.classes[currentClass].ContainedStudents.concat(props.classes[currentClass].ContainedTeachers)} />
+                        </List>
+                    </Box>
+                </Box>
+            </Box>
+        </Box>
     )
 }
-
 
 interface FindClassProps {
     user: IUser;
@@ -261,13 +270,13 @@ export function MyClassPage() {
     const [component, setComponent] = React.useState<JSX.Element>();
 
     const { user } = useTypedSelector(state => state.user);
-
+    
+ 
     React.useEffect(() => {
         document.title = 'Мой класс | EduCity';
 
         const fetchData = async () => {
             const data = await (await ClassService.findUserClass(user.user.id)).data;
-            console.log(data);
             if (data.length) {
                 setComponent(<MyClass classes={data} user={user.user} />);
                 return data;
@@ -279,8 +288,10 @@ export function MyClassPage() {
     }, [])
 
     return (
-        <MainLayout paddingMain='TB'>
-            {component}
+        <MainLayout paddingMain='NONE' renderFooter={false}>
+            <div style={{maxHeight: '90vh', height: '90vh', width: '100%', overflow: 'hidden', boxSizing: 'border-box'}}>
+                {component}
+            </div>
         </MainLayout>
     )
 }

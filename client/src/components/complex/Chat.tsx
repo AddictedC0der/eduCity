@@ -8,6 +8,8 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { IUser } from '../../models/user.model';
 import { ChatService } from '../../http/chatAPI';
 
+import { useTheme, Theme } from '@emotion/react';
+
 
 interface IChatMessageProps {
     message: IRealChatMessage;
@@ -21,6 +23,8 @@ function ChatMessage(props: IChatMessageProps) {
     const [anchor, setAnchor] = React.useState<HTMLElement | null>(null);
     const open = Boolean(anchor);
     const [reply, setReply] = React.useState<IRealChatMessage | false>(false);
+
+    const theme: Theme = useTheme();
 
     React.useEffect(() => {
         const fetchData = async () => {
@@ -77,12 +81,21 @@ function ChatMessage(props: IChatMessageProps) {
     }
 
     const renderReplyPanel = () => {
+        const highlightOriginal = () => {
+            // TODO   
+        }
+
         if (!reply) {
             return;
         }
+
+        const original = document.getElementById(props.message.replyTo?.id.toString()!)
+        console.log(original)
+
         return (
-            <Paper elevation={3} sx={{display: 'flex', flexDirection: 'row'}}>
-                <div style={{width: '90%', display: 'flex', flexDirection: 'column'}}>
+            <Paper elevation={3} sx={{display: 'flex', flexDirection: 'row'}}
+                onClick={(e) => {e.preventDefault();e.stopPropagation();original?.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'})}}>
+                <div style={{width: '100%', display: 'flex', flexDirection: 'column', paddingLeft: '5%'}}>
                     <Typography variant='caption'>{reply.author.UserLogin}</Typography>
                     <Typography>{reply.text}</Typography>
                 </div>
@@ -91,15 +104,16 @@ function ChatMessage(props: IChatMessageProps) {
     }
 
     return (
-        <ListItem key={props.message.id}
+        <ListItem key={props.message.id} id={props.message.id.toString()}
                 sx={{display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
                 alignItems: props.message.author.id === props.userId ? 'end' : 'start', maxWidth: '90%',
                 alignSelf: props.message.author.id === props.userId ? 'end' : 'start'}}>
             
             <Typography>{props.message.author.UserLogin}</Typography>
-            {renderReplyPanel()}
-            <Paper sx={{backgroundColor: 'gray', padding: '1%', minWidth: '5vw', maxWidth: '30vw'}} onClick={handleOpenMenu}>
-                <Typography sx={{maxWidth: '100%', flexGrow: '1', wordWrap: 'break-word'}}>{props.message.text}</Typography>
+            
+            <Paper sx={{backgroundColor: 'primary.main', color: 'primary.contrastText', padding: '1%', minWidth: '5vw', maxWidth: '30vw'}} onClick={handleOpenMenu}>
+                {renderReplyPanel()}
+                <Typography sx={{maxWidth: '100%', flexGrow: '1', marignTop: '5%', wordWrap: 'break-word'}}>{props.message.text}</Typography>
             </Paper>
             <Typography sx={{color: 'gray'}}>{new Date(props.message.sendTime).toLocaleTimeString()}</Typography>
             <Menu
@@ -226,7 +240,7 @@ export function Chat() {
     }
 
     return (
-        <Paper elevation={5} sx={{height: '100%'}} aria-label='chatPaper'>
+        <Box sx={{height: '100%'}} aria-label='chatPaper'>
             <List sx={{height: '80%', maxHeight: '80%', overflow: 'auto'}}>
                 {msgs.map(msg => {return (<ChatMessage key={msg.id} message={msg} userId={user.user.id} onEditStart={startEditing} onReply={replyMessage} />)})}
             </List>
@@ -240,6 +254,6 @@ export function Chat() {
                     onStopReplying={() => setIsReplying(false)} />
             </div>
             
-        </Paper>
+        </Box>
     )
 }
